@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,9 @@
     <title>奶龙美术馆 - fridrich-of-ntu</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         /* 页面切换动画 */
         .page {
@@ -206,6 +209,51 @@
 </head>
 <body>
     <div class="museum-bg"></div>
+    <!-- 登录/注册弹窗 -->
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="auth-close">&times;</button>
+            <div id="auth-error" class="auth-error"></div>
+            <div id="auth-success" class="auth-success"></div>
+
+            <!-- 登录表单 -->
+            <div id="login-form" class="auth-form">
+                <h2>登录</h2>
+                <div class="form-group">
+                    <input type="email" id="login-email" placeholder="邮箱" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="login-password" placeholder="密码" autocomplete="current-password">
+                </div>
+                <button id="login-submit" class="auth-submit-btn">登录</button>
+                <div class="divider"><span>或</span></div>
+                <button class="wechat-btn" disabled>微信登录（即将开放）</button>
+                <p class="auth-switch">还没有账号？<a href="#" id="switch-to-register">注册</a></p>
+            </div>
+
+            <!-- 注册表单 -->
+            <div id="register-form" class="auth-form" style="display:none">
+                <h2>注册</h2>
+                <div class="form-group">
+                    <input type="text" id="register-username" placeholder="用户名" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <input type="email" id="register-email" placeholder="邮箱" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-password" placeholder="密码（至少6位）" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="register-confirm-password" placeholder="确认密码" autocomplete="new-password">
+                </div>
+                <button id="register-submit" class="auth-submit-btn">注册</button>
+                <div class="divider"><span>或</span></div>
+                <button class="wechat-btn" disabled>微信注册（即将开放）</button>
+                <p class="auth-switch">已有账号？<a href="#" id="switch-to-login">登录</a></p>
+            </div>
+        </div>
+    </div>
+
     
     <!-- 全屏按钮 -->
     <div class="fullscreen-wrapper">
@@ -220,6 +268,15 @@
         <!-- 页面1：进入页 -->
         <div class="page active" id="page-landing">
             <div class="landing-page">
+                <div id="user-header" class="user-header">
+                    <div id="user-info" style="display:none">
+                        <span class="username"></span>
+                        <button id="logout-btn" class="logout-btn">\u9000\u51fa</button>
+                    </div>
+                    <div id="guest-info">
+                        <button id="header-login-btn" class="header-login-btn">\u767b\u5f55</button>
+                    </div>
+                </div>
                 <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="landing-nailong">
                 <h1 class="landing-title">奶龙美术馆</h1>
                 <p class="landing-subtitle">Nailong Art Museum</p>
@@ -324,11 +381,16 @@
         
         // 进入答题
         function enterQuiz() {
-            currentQuestion = 0;
-            score = 0;
-            showPage('quiz');
-            loadQuestion();
-        }
+    var currentUser = authManager.currentUser;
+    if (!currentUser) {
+        authManager.showModal();
+        return;
+    }
+    currentQuestion = 0;
+    score = 0;
+    showPage('quiz');
+    loadQuestion();
+}
         
         // 全屏切换
         function toggleFullscreen() {
@@ -499,3 +561,5 @@
     </script>
 </body>
 </html>
+
+

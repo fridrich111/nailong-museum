@@ -1,4 +1,4 @@
-/* ===== 基础样式 ===== */
+﻿/* ===== 基础样式 ===== */
 :root {
     --deep-indigo: #1a1a2e;
     --nailong-yellow: #FFD93D;
@@ -575,4 +575,296 @@ body:-moz-full-screen {
 
 :fullscreen .landing-title {
     font-size: 3rem;
+}
+
+/* ===== 认证弹窗样式 ===== */
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.auth-modal.show {
+    display: flex;
+}
+
+.auth-modal-content {
+    position: relative;
+    background: linear-gradient(145deg, #1e1e3a 0%, #0f0f23 100%);
+    border: 2px solid var(--antique-gold);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 420px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(201, 162, 39, 0.15);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.auth-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--cream);
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.auth-close:hover {
+    color: var(--nailong-yellow);
+}
+
+.auth-form h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--antique-gold);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--cream);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: rgba(245, 245, 220, 0.4);
+}
+
+.form-group input:focus {
+    border-color: var(--antique-gold);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1.1rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    color: var(--deep-indigo);
+    background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 217, 61, 0.4);
+}
+
+.auth-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.auth-submit-btn.auth-loading {
+    position: relative;
+    color: transparent;
+}
+
+.auth-submit-btn.auth-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--deep-indigo);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: authSpin 0.6s linear infinite;
+}
+
+@keyframes authSpin {
+    to { transform: rotate(360deg); }
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.9rem;
+    color: rgba(245, 245, 220, 0.6);
+}
+
+.auth-switch a {
+    color: var(--nailong-yellow);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.auth-switch a:hover {
+    color: var(--antique-gold);
+    text-decoration: underline;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.2rem 0;
+    color: rgba(245, 245, 220, 0.3);
+    font-size: 0.85rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201, 162, 39, 0.2);
+}
+
+.divider span {
+    padding: 0 0.8rem;
+}
+
+.wechat-btn {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: rgba(245, 245, 220, 0.4);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(201, 162, 39, 0.2);
+    border-radius: 10px;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+}
+
+.auth-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 1.2em;
+}
+
+.auth-success {
+    color: #51cf66;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 1.2em;
+}
+
+/* ===== 用户入口样式 ===== */
+.user-header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+#user-info {
+    display: none;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+#user-info .username {
+    font-size: 0.95rem;
+    color: var(--nailong-yellow);
+    font-weight: 500;
+}
+
+.header-login-btn {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.95rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    color: var(--deep-indigo);
+    background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(255, 217, 61, 0.3);
+}
+
+.header-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 217, 61, 0.4);
+}
+
+.logout-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--cream);
+    background: transparent;
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    border-color: var(--antique-gold);
+    color: var(--nailong-yellow);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+/* ===== 响应式认证样式 ===== */
+@media (max-width: 768px) {
+    .auth-modal-content {
+        padding: 2rem 1.5rem;
+        width: 95%;
+        max-width: 360px;
+    }
+
+    .auth-form h2 {
+        font-size: 1.5rem;
+    }
+
+    .user-header {
+        position: relative;
+        text-align: right;
+        margin-bottom: 1rem;
+    }
 }
