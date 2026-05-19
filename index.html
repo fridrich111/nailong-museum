@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>奶龙美术馆 - fridrich-of-ntu</title>
+    <title>濂堕緳缇庢湳棣?- fridrich-of-ntu</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/progress.js"></script>
     <script src="js/submission.js"></script>
     <style>
-        /* 页面切换动画 */
+        /* 椤甸潰鍒囨崲鍔ㄧ敾 */
         .page {
             display: none;
             animation: fadeIn 0.5s ease-out;
@@ -26,7 +27,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* 进入按钮特殊样式 */
+        /* 杩涘叆鎸夐挳鐗规畩鏍峰紡 */
         .enter-btn {
             position: relative;
             padding: 1.5rem 4rem;
@@ -73,7 +74,7 @@
             left: 100%;
         }
         
-        /* 首页特殊样式 */
+        /* 棣栭〉鐗规畩鏍峰紡 */
         .landing-page {
             text-align: center;
         }
@@ -124,7 +125,7 @@
             margin: 0 auto 2rem;
         }
         
-        /* 反馈页面视频和讲解并排 */
+        /* 鍙嶉椤甸潰瑙嗛鍜岃瑙ｅ苟鎺?*/
         .feedback-content {
             display: flex;
             flex-direction: column;
@@ -154,7 +155,7 @@
             }
         }
         
-        /* 通关页面 */
+        /* 閫氬叧椤甸潰 */
         .complete-message {
             font-family: 'Playfair Display', serif;
             font-size: 3rem;
@@ -169,7 +170,7 @@
             50% { text-shadow: 0 0 60px rgba(255, 217, 61, 0.9), 0 0 100px rgba(255, 217, 61, 0.5); }
         }
         
-        /* 全屏按钮样式 */
+        /* 鍏ㄥ睆鎸夐挳鏍峰紡 */
         .fullscreen-wrapper {
             position: fixed;
             top: 20px;
@@ -210,115 +211,110 @@
 </head>
 <body>
     <div class="museum-bg"></div>
-    <!-- 登录/注册弹窗 -->
+    <!-- 鐧诲綍/娉ㄥ唽寮圭獥 -->
     <div id="auth-modal" class="auth-modal">
         <div class="auth-modal-content">
             <button class="auth-close">&times;</button>
             <div id="auth-error" class="auth-error"></div>
             <div id="auth-success" class="auth-success"></div>
 
-            <!-- 登录表单 -->
+            <!-- 鐧诲綍琛ㄥ崟 -->
             <div id="login-form" class="auth-form">
-                <h2>登录</h2>
+                <h2>鐧诲綍</h2>
                 <div class="form-group">
-                    <input type="email" id="login-email" placeholder="邮箱" autocomplete="email">
+                    <input type="email" id="login-email" placeholder="閭" autocomplete="email">
                 </div>
                 <div class="form-group">
-                    <input type="password" id="login-password" placeholder="密码" autocomplete="current-password">
+                    <input type="password" id="login-password" placeholder="瀵嗙爜" autocomplete="current-password">
                 </div>
-                <button id="login-submit" class="auth-submit-btn">登录</button>
-                <div class="divider"><span>或</span></div>
-                <button class="wechat-btn" disabled>微信登录（即将开放）</button>
-                <p class="auth-switch">还没有账号？<a href="#" id="switch-to-register">注册</a></p>
+                <button id="login-submit" class="auth-submit-btn">鐧诲綍</button>
+                <div class="divider"><span>鎴?/span></div>
+                <button class="wechat-btn" disabled>寰俊鐧诲綍锛堝嵆灏嗗紑鏀撅級</button>
+                <p class="auth-switch">杩樻病鏈夎处鍙凤紵<a href="#" id="switch-to-register">娉ㄥ唽</a></p>
             </div>
 
-            <!-- 注册表单 -->
+            <!-- 娉ㄥ唽琛ㄥ崟 -->
             <div id="register-form" class="auth-form" style="display:none">
-                <h2>注册</h2>
+                <h2>娉ㄥ唽</h2>
                 <div class="form-group">
-                    <input type="text" id="register-username" placeholder="用户名" autocomplete="username">
+                    <input type="text" id="register-username" placeholder="鐢ㄦ埛鍚? autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <input type="email" id="register-email" placeholder="邮箱" autocomplete="email">
+                    <input type="email" id="register-email" placeholder="閭" autocomplete="email">
                 </div>
                 <div class="form-group">
-                    <input type="password" id="register-password" placeholder="密码（至少6位）" autocomplete="new-password">
+                    <input type="password" id="register-password" placeholder="瀵嗙爜锛堣嚦灏?浣嶏級" autocomplete="new-password">
                 </div>
                 <div class="form-group">
-                    <input type="password" id="register-confirm-password" placeholder="确认密码" autocomplete="new-password">
+                    <input type="password" id="register-confirm-password" placeholder="纭瀵嗙爜" autocomplete="new-password">
                 </div>
-                <button id="register-submit" class="auth-submit-btn">注册</button>
-                <div class="divider"><span>或</span></div>
-                <button class="wechat-btn" disabled>微信注册（即将开放）</button>
-                <p class="auth-switch">已有账号？<a href="#" id="switch-to-login">登录</a></p>
+                <button id="register-submit" class="auth-submit-btn">娉ㄥ唽</button>
+                <div class="divider"><span>鎴?/span></div>
+                <button class="wechat-btn" disabled>寰俊娉ㄥ唽锛堝嵆灏嗗紑鏀撅級</button>
+                <p class="auth-switch">宸叉湁璐﹀彿锛?a href="#" id="switch-to-login">鐧诲綍</a></p>
             </div>
         </div>
     </div>
 
     
-    <!-- 全屏按钮 -->
+    <!-- 鍏ㄥ睆鎸夐挳 -->
     <div class="fullscreen-wrapper">
-        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
-            ⛶
-        </button>
-        <span class="fullscreen-label">全屏</span>
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="鍏ㄥ睆妯″紡">
+            鉀?        </button>
+        <span class="fullscreen-label">鍏ㄥ睆</span>
     </div>
     
     <main class="container">
         
-        <!-- 页面1：进入页 -->
+        <!-- 椤甸潰1锛氳繘鍏ラ〉 -->
         <div class="page active" id="page-landing">
             <div class="landing-page">
                 <div id="user-header" class="user-header">
                     <div id="user-info" style="display:none">
                         <span class="username"></span>
-                        <button id="logout-btn" class="logout-btn">退出</button>
+                        <button id="logout-btn" class="logout-btn">閫€鍑?/button>
                     </div>
                     <div id="guest-info">
-                        <button id="header-login-btn" class="header-login-btn">登录</button>
+                        <button id="header-login-btn" class="header-login-btn">鐧诲綍</button>
                     </div>
                 </div>
-                <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="landing-nailong">
-                <h1 class="landing-title">奶龙美术馆</h1>
+                <img src="assets/images/thinking-nailong.jpg" alt="娌夋€濈殑濂堕緳" class="landing-nailong">
+                <h1 class="landing-title">濂堕緳缇庢湳棣?/h1>
                 <p class="landing-subtitle">Nailong Art Museum</p>
                 <p class="landing-desc">
-                    欢迎来到奶龙美术馆！<br>
-                    这里收藏了奶龙穿越世界名画的珍贵影像。<br>
-                    你能认出这些名画的原作吗？
-                </p>
-                <div class="button-group">
-                    <button class="enter-btn" onclick="enterQuiz()">
-                        进入美术馆
-                    </button>
-                    <button class="submit-entry-btn" onclick="enterSubmit()">投稿作品</button>
+                    娆㈣繋鏉ュ埌濂堕緳缇庢湳棣嗭紒<br>
+                    杩欓噷鏀惰棌浜嗗ザ榫欑┛瓒婁笘鐣屽悕鐢荤殑鐝嶈吹褰卞儚銆?br>
+                    浣犺兘璁ゅ嚭杩欎簺鍚嶇敾鐨勫師浣滃悧锛?                </p>
+                <div class="button-group" id="homeButtons">
+                    <!-- 动态生成按钮 -->
                 </div>
             </div>
         </div>
         
-        <!-- 页面2：答题页 -->
+        <!-- 椤甸潰2锛氱瓟棰橀〉 -->
         <div class="page" id="page-quiz">
             <div class="quiz-container">
                 <div class="progress-bar">
-                    <span class="progress-text" id="progressText">第 1 / 23 题</span>
-                    <span class="progress-score" id="progressScore">得分: 0</span>
+                    <span class="progress-text" id="progressText">绗?1 / 23 棰?/span>
+                    <span class="progress-score" id="progressScore">寰楀垎: 0</span>
                 </div>
                 
                 <div class="painting-frame">
-                    <img src="" alt="奶龙改编名画" class="painting-img" id="paintingImg">
+                    <img src="" alt="濂堕緳鏀圭紪鍚嶇敾" class="painting-img" id="paintingImg">
                 </div>
                 
-                <h2 class="question-text">这幅画改编自哪幅世界名画？</h2>
+                <h2 class="question-text">杩欏箙鐢绘敼缂栬嚜鍝箙涓栫晫鍚嶇敾锛?/h2>
                 
                 <div class="options-container" id="optionsContainer">
                 </div>
                 
                 <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>
-                    确认答案
+                    纭绛旀
                 </button>
             </div>
         </div>
         
-        <!-- 页面3：反馈页 -->
+        <!-- 椤甸潰3锛氬弽棣堥〉 -->
         <div class="page" id="page-feedback">
             <div class="feedback-container">
                 <div class="feedback-content">
@@ -329,7 +325,7 @@
                     </div>
                     
                     <div class="explanation-section" id="explanationSection">
-                        <img src="assets/images/thinking-nailong.jpg" alt="沉思奶龙" class="thinking-nailong">
+                        <img src="assets/images/thinking-nailong.jpg" alt="娌夋€濆ザ榫? class="thinking-nailong">
                         <div class="speech-bubble">
                             <h3 class="explanation-title" id="paintingTitle"></h3>
                             <p class="explanation-text" id="explanationText"></p>
@@ -338,12 +334,11 @@
                 </div>
                 
                 <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
-                    下一题
-                </button>
+                    涓嬩竴棰?                </button>
             </div>
         </div>
         
-        <!-- 页面4：通关页 -->
+        <!-- 椤甸潰4锛氶€氬叧椤?-->
         <div class="page" id="page-complete">
             <div class="complete-container">
                 <div class="pass-video">
@@ -353,61 +348,59 @@
                 </div>
                 
                 <h1 class="complete-message" id="finalMessage">
-                    可我觉得很神圣啊！
-                </h1>
+                    鍙垜瑙夊緱寰堢鍦ｅ晩锛?                </h1>
                 
-                <p class="final-quote">—— 奶龙</p>
+                <p class="final-quote">鈥斺€?濂堕緳</p>
                 
                 <button class="restart-btn" onclick="restartQuiz()">
-                    再来一次
-                </button>
+                    鍐嶆潵涓€娆?                </button>
             </div>
         </div>
         
-        <!-- 页面5：投稿页 -->
+        <!-- 椤甸潰5锛氭姇绋块〉 -->
         <div class="page" id="page-submit">
           <div class="submit-container">
-            <h2 class="submit-title">投稿作品</h2>
-            <p class="submit-desc">分享你的奶龙艺术创作，让更多人猜猜这是哪幅名画！</p>
+            <h2 class="submit-title">鎶曠浣滃搧</h2>
+            <p class="submit-desc">鍒嗕韩浣犵殑濂堕緳鑹烘湳鍒涗綔锛岃鏇村浜虹寽鐚滆繖鏄摢骞呭悕鐢伙紒</p>
             
             <div class="submit-form">
-              <!-- 图片上传区域 -->
+              <!-- 鍥剧墖涓婁紶鍖哄煙 -->
               <div class="upload-area" id="uploadArea">
                 <input type="file" id="imageInput" accept="image/*" hidden>
                 <div class="upload-placeholder" id="uploadPlaceholder">
-                  <span class="upload-icon">📷</span>
-                  <p>点击上传奶龙改编名画</p>
-                  <p class="upload-hint">支持 JPG, PNG 格式</p>
+                  <span class="upload-icon">馃摲</span>
+                  <p>鐐瑰嚮涓婁紶濂堕緳鏀圭紪鍚嶇敾</p>
+                  <p class="upload-hint">鏀寔 JPG, PNG 鏍煎紡</p>
                 </div>
                 <img id="previewImage" class="preview-image" style="display: none;">
-                <button id="removeImage" class="remove-image" style="display: none;">×</button>
+                <button id="removeImage" class="remove-image" style="display: none;">脳</button>
               </div>
               
-              <!-- 原画信息 -->
+              <!-- 鍘熺敾淇℃伅 -->
               <div class="form-group">
-                <label>原画名称</label>
-                <input type="text" id="originalTitle" placeholder="例如：《蒙娜丽莎》">
+                <label>鍘熺敾鍚嶇О</label>
+                <input type="text" id="originalTitle" placeholder="渚嬪锛氥€婅挋濞滀附鑾庛€?>
               </div>
               
               <div class="form-group">
-                <label>原画艺术家（可选）</label>
-                <input type="text" id="originalArtist" placeholder="例如：达芬奇">
+                <label>鍘熺敾鑹烘湳瀹讹紙鍙€夛級</label>
+                <input type="text" id="originalArtist" placeholder="渚嬪锛氳揪鑺">
               </div>
               
-              <button id="submitBtn" class="submit-artwork-btn" disabled>提交投稿</button>
+              <button id="submitBtn" class="submit-artwork-btn" disabled>鎻愪氦鎶曠</button>
               
               <div id="submitMessage" class="submit-message"></div>
             </div>
             
-            <!-- 我的投稿 -->
+            <!-- 鎴戠殑鎶曠 -->
             <div class="my-submissions">
-              <h3>我的投稿</h3>
+              <h3>鎴戠殑鎶曠</h3>
               <div id="submissionsList" class="submissions-list">
-                <p class="empty-text">暂无投稿</p>
+                <p class="empty-text">鏆傛棤鎶曠</p>
               </div>
             </div>
             
-            <button class="back-btn" onclick="showPage('landing')">返回首页</button>
+            <button class="back-btn" onclick="showPage('landing')">杩斿洖棣栭〉</button>
           </div>
         </div>
         
@@ -415,13 +408,12 @@
 
     <script src="js/paintings-data.js"></script>
     <script>
-        // 全局状态
-        let currentQuestion = 0;
+        // 鍏ㄥ眬鐘舵€?        let currentQuestion = 0;
         let score = 0;
         let selectedOption = null;
         let currentPage = 'landing';
         
-        // 页面切换（不退出全屏）
+        // 椤甸潰鍒囨崲锛堜笉閫€鍑哄叏灞忥級
         function showPage(pageName) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
@@ -430,7 +422,7 @@
             currentPage = pageName;
         }
         
-        // 进入答题
+        // 杩涘叆绛旈
         function enterQuiz() {
     var currentUser = authManager.currentUser;
     if (!currentUser) {
@@ -439,11 +431,13 @@
     }
     currentQuestion = 0;
     score = 0;
+    // 清除之前的进度
+    progressManager.clearProgress();
     showPage('quiz');
     loadQuestion();
 }
         
-        // 进入投稿页面
+        // 杩涘叆鎶曠椤甸潰
         function enterSubmit() {
           const currentUser = authManager.currentUser;
           if (!currentUser) {
@@ -454,33 +448,32 @@
           loadMySubmissions();
         }
         
-        // 全屏切换
+        // 鍏ㄥ睆鍒囨崲
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(function(err) {
-                    console.log('全屏模式被拒绝:', err);
+                    console.log('鍏ㄥ睆妯″紡琚嫆缁?', err);
                 });
             } else {
                 document.exitFullscreen();
             }
         }
         
-        // 监听全屏变化，更新按钮图标
-        document.addEventListener('fullscreenchange', function() {
+        // 鐩戝惉鍏ㄥ睆鍙樺寲锛屾洿鏂版寜閽浘鏍?        document.addEventListener('fullscreenchange', function() {
             var btn = document.getElementById('fullscreenBtn');
             if (document.fullscreenElement) {
-                btn.textContent = '⛶';
+                btn.textContent = '鉀?;
             } else {
-                btn.textContent = '⛶';
+                btn.textContent = '鉀?;
             }
         });
         
-        // 加载题目
+        // 鍔犺浇棰樼洰
         function loadQuestion() {
             var painting = paintingsData[currentQuestion];
             
-            document.getElementById('progressText').textContent = '第 ' + (currentQuestion + 1) + ' / ' + paintingsData.length + ' 题';
-            document.getElementById('progressScore').textContent = '得分: ' + score;
+            document.getElementById('progressText').textContent = '绗?' + (currentQuestion + 1) + ' / ' + paintingsData.length + ' 棰?;
+            document.getElementById('progressScore').textContent = '寰楀垎: ' + score;
             document.getElementById('paintingImg').src = 'assets/images/' + painting.image;
             
             var optionsContainer = document.getElementById('optionsContainer');
@@ -499,13 +492,13 @@
             document.getElementById('submitBtn').disabled = true;
         }
         
-        // 选择选项
+        // 閫夋嫨閫夐」
         function selectOption(option) {
             selectedOption = option;
             document.getElementById('submitBtn').disabled = false;
         }
         
-        // 提交答案
+        // 鎻愪氦绛旀
         function submitAnswer() {
             if (!selectedOption) return;
             
@@ -520,7 +513,7 @@
             showFeedback(isCorrect, painting);
         }
         
-        // 显示反馈
+        // 鏄剧ず鍙嶉
         function showFeedback(isCorrect, painting) {
             var video = document.getElementById('feedbackVideo');
             var explanationSection = document.getElementById('explanationSection');
@@ -530,28 +523,26 @@
             explanationSection.style.opacity = '0';
             
             if (isCorrect) {
-                // 答对：播放大笑视频（有声音），结束后显示"懂你意思"
+                // 绛斿锛氭挱鏀惧ぇ绗戣棰戯紙鏈夊０闊筹級锛岀粨鏉熷悗鏄剧ず"鎳備綘鎰忔€?
                 video.onended = function() {
                     document.getElementById('paintingTitle').textContent = painting.title;
-                    document.getElementById('explanationText').textContent = '懂你意思';
+                    document.getElementById('explanationText').textContent = '鎳備綘鎰忔€?;
                     explanationSection.style.opacity = '1';
                 };
                 video.onerror = function() {
                     document.getElementById('paintingTitle').textContent = painting.title;
-                    document.getElementById('explanationText').textContent = '懂你意思';
+                    document.getElementById('explanationText').textContent = '鎳備綘鎰忔€?;
                     explanationSection.style.opacity = '1';
                 };
             } else {
-                // 答错：播放忧郁视频（有声音），同时显示100字讲解
-                video.onloadeddata = function() {
+                // 绛旈敊锛氭挱鏀惧咖閮佽棰戯紙鏈夊０闊筹級锛屽悓鏃舵樉绀?00瀛楄瑙?                video.onloadeddata = function() {
                     showExplanation(painting);
                 };
                 setTimeout(function() { showExplanation(painting); }, 500);
             }
         }
         
-        // 显示讲解（打字机效果）
-        function showExplanation(painting) {
+        // 鏄剧ず璁茶В锛堟墦瀛楁満鏁堟灉锛?        function showExplanation(painting) {
             document.getElementById('paintingTitle').textContent = 
                 painting.title + ' - ' + painting.artist + ' (' + painting.year + ')';
             document.getElementById('explanationSection').style.opacity = '1';
@@ -574,7 +565,7 @@
             type();
         }
         
-        // 停止当前视频
+        // 鍋滄褰撳墠瑙嗛
         function stopCurrentVideo() {
             var feedbackVideo = document.getElementById('feedbackVideo');
             if (feedbackVideo) {
@@ -584,12 +575,16 @@
             }
         }
         
-        // 下一题
-        function nextQuestion() {
+        // 涓嬩竴棰?        function nextQuestion() {
             stopCurrentVideo();
             currentQuestion++;
             
+            // 保存进度
+            progressManager.saveProgress(currentQuestion, score);
+            
             if (currentQuestion >= paintingsData.length) {
+                // 通关时清除进度
+                progressManager.clearProgress();
                 showPage('complete');
                 playPassVideo();
             } else {
@@ -598,7 +593,7 @@
             }
         }
         
-        // 播放通关视频
+        // 鎾斁閫氬叧瑙嗛
         function playPassVideo() {
             var video = document.getElementById('passVideo');
             video.volume = 1.0;
@@ -610,16 +605,75 @@
             };
         }
         
-        // 重新开始
-        function restartQuiz() {
+        // 閲嶆柊寮€濮?        function restartQuiz() {
+            progressManager.clearProgress();
             currentQuestion = 0;
             score = 0;
             showPage('landing');
         }
         
-        // 页面加载时
-        window.onload = function() {
+        // 椤甸潰鍔犺浇鏃?        window.onload = function() {
+            updateHomeButtons();
         };
+        
+        // 登录状态变化时更新按钮
+        supabaseClient.auth.onAuthStateChange(() => {
+            updateHomeButtons();
+        });
+        
+        // 更新首页按钮
+        async function updateHomeButtons() {
+            const container = document.getElementById('homeButtons');
+            const user = authManager.currentUser;
+            
+            if (!user) {
+                // 未登录
+                container.innerHTML = `
+                    <button class="enter-btn" onclick="enterQuiz()">进入美术馆</button>
+                    <button class="submit-entry-btn" onclick="enterSubmit()">投稿作品</button>
+                `;
+                return;
+            }
+            
+            // 已登录，检查进度
+            const progress = await progressManager.loadProgress();
+            
+            if (progress && progress.current_question > 0 && progress.current_question < paintingsData.length) {
+                // 有进行中的进度
+                container.innerHTML = `
+                    <button class="enter-btn" onclick="continueQuiz()">
+                        继续答题 <span class="progress-hint">(第 ${progress.current_question + 1}/${paintingsData.length} 题)</span>
+                    </button>
+                    <button class="restart-btn" onclick="startNewQuiz()">重新开始</button>
+                    <button class="submit-entry-btn" onclick="enterSubmit()">投稿作品</button>
+                `;
+            } else {
+                // 无进度或已完成
+                container.innerHTML = `
+                    <button class="enter-btn" onclick="enterQuiz()">进入美术馆</button>
+                    <button class="submit-entry-btn" onclick="enterSubmit()">投稿作品</button>
+                `;
+            }
+        }
+        
+        // 继续答题
+        async function continueQuiz() {
+            const progress = await progressManager.loadProgress();
+            if (progress) {
+                currentQuestion = progress.current_question;
+                score = progress.score;
+                showPage('quiz');
+                loadQuestion();
+            }
+        }
+        
+        // 重新开始
+        async function startNewQuiz() {
+            if (confirm('确定要重新开始吗？之前的进度将会丢失。')) {
+                await progressManager.clearProgress();
+                enterQuiz();
+            }
+        }
     </script>
 </body>
 </html>

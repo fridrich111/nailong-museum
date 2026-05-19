@@ -1127,3 +1127,30 @@ body:-moz-full-screen {
   background: var(--antique-gold);
   color: var(--deep-indigo);
 }
+
+
+/* 进度提示 */
+.progress-hint {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-left: 0.5rem;
+}
+
+/* 重新开始按钮 */
+.restart-btn {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid rgba(201, 162, 39, 0.5);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.restart-btn:hover {
+  border-color: var(--antique-gold);
+  color: var(--antique-gold);
+}
