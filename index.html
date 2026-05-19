@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶龙美术馆 - fridrich-of-ntu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 页面切换动画 */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .page.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 进入按钮特殊样式 */
+        .enter-btn {
+            position: relative;
+            padding: 1.5rem 4rem;
+            font-size: 1.5rem;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 700;
+            color: var(--deep-indigo);
+            background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 20px rgba(255, 217, 61, 0.4),
+                0 0 40px rgba(201, 162, 39, 0.3);
+            margin-top: 2rem;
+        }
+        
+        .enter-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 8px 30px rgba(255, 217, 61, 0.5),
+                0 0 60px rgba(201, 162, 39, 0.4);
+        }
+        
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: left 0.6s ease;
+        }
+        
+        .enter-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* 首页特殊样式 */
+        .landing-page {
+            text-align: center;
+        }
+        
+        .landing-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--antique-gold);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        
+        .landing-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--nailong-yellow);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            opacity: 0.8;
+        }
+        
+        .landing-nailong {
+            width: 350px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid var(--antique-gold);
+            box-shadow: 
+                0 0 60px rgba(201, 162, 39, 0.4),
+                0 0 120px rgba(201, 162, 39, 0.2);
+            animation: breathe 3s ease-in-out infinite;
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.02) translateY(-8px); }
+        }
+        
+        .landing-desc {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: rgba(245, 245, 220, 0.9);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* 反馈页面视频和讲解并排 */
+        .feedback-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+        
+        .video-and-explanation {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .video-and-explanation {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+            
+            .video-and-explanation .video-container {
+                flex: 1;
+                max-width: 50%;
+            }
+            
+            .video-and-explanation .explanation-section {
+                flex: 1;
+            }
+        }
+        
+        /* 通关页面 */
+        .complete-message {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--nailong-yellow);
+            text-shadow: 0 0 40px rgba(255, 217, 61, 0.6);
+            margin: 2rem 0;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 40px rgba(255, 217, 61, 0.6); }
+            50% { text-shadow: 0 0 60px rgba(255, 217, 61, 0.9), 0 0 100px rgba(255, 217, 61, 0.5); }
+        }
+        
+        /* 全屏按钮样式 */
+        .fullscreen-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .fullscreen-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(201, 162, 39, 0.2);
+            border: 2px solid var(--antique-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--antique-gold);
+            transition: all 0.3s ease;
+        }
+        
+        .fullscreen-btn:hover {
+            background: rgba(201, 162, 39, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .fullscreen-label {
+            font-size: 0.7rem;
+            color: var(--antique-gold);
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="museum-bg"></div>
+    
+    <!-- 全屏按钮 -->
+    <div class="fullscreen-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="fullscreen-label">全屏</span>
+    </div>
+    
+    <main class="container">
+        
+        <!-- 页面1：进入页 -->
+        <div class="page active" id="page-landing">
+            <div class="landing-page">
+                <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="landing-nailong">
+                <h1 class="landing-title">奶龙美术馆</h1>
+                <p class="landing-subtitle">Nailong Art Museum</p>
+                <p class="landing-desc">
+                    欢迎来到奶龙美术馆！<br>
+                    这里收藏了奶龙穿越世界名画的珍贵影像。<br>
+                    你能认出这些名画的原作吗？
+                </p>
+                <button class="enter-btn" onclick="enterQuiz()">
+                    进入美术馆
+                </button>
+            </div>
+        </div>
+        
+        <!-- 页面2：答题页 -->
+        <div class="page" id="page-quiz">
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <span class="progress-text" id="progressText">第 1 / 23 题</span>
+                    <span class="progress-score" id="progressScore">得分: 0</span>
+                </div>
+                
+                <div class="painting-frame">
+                    <img src="" alt="奶龙改编名画" class="painting-img" id="paintingImg">
+                </div>
+                
+                <h2 class="question-text">这幅画改编自哪幅世界名画？</h2>
+                
+                <div class="options-container" id="optionsContainer">
+                </div>
+                
+                <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>
+                    确认答案
+                </button>
+            </div>
+        </div>
+        
+        <!-- 页面3：反馈页 -->
+        <div class="page" id="page-feedback">
+            <div class="feedback-container">
+                <div class="feedback-content">
+                    <div class="video-container" id="videoContainer">
+                        <video id="feedbackVideo" autoplay playsinline>
+                            <source src="" type="video/mp4">
+                        </video>
+                    </div>
+                    
+                    <div class="explanation-section" id="explanationSection">
+                        <img src="assets/images/thinking-nailong.jpg" alt="沉思奶龙" class="thinking-nailong">
+                        <div class="speech-bubble">
+                            <h3 class="explanation-title" id="paintingTitle"></h3>
+                            <p class="explanation-text" id="explanationText"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+                    下一题
+                </button>
+            </div>
+        </div>
+        
+        <!-- 页面4：通关页 -->
+        <div class="page" id="page-complete">
+            <div class="complete-container">
+                <div class="pass-video">
+                    <video id="passVideo" autoplay playsinline>
+                        <source src="assets/videos/pass.mp4" type="video/mp4">
+                    </video>
+                </div>
+                
+                <h1 class="complete-message" id="finalMessage">
+                    可我觉得很神圣啊！
+                </h1>
+                
+                <p class="final-quote">—— 奶龙</p>
+                
+                <button class="restart-btn" onclick="restartQuiz()">
+                    再来一次
+                </button>
+            </div>
+        </div>
+        
+    </main>
+
+    <script src="js/paintings-data.js"></script>
+    <script>
+        // 全局状态
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let currentPage = 'landing';
+        
+        // 页面切换（不退出全屏）
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('page-' + pageName).classList.add('active');
+            currentPage = pageName;
+        }
+        
+        // 进入答题
+        function enterQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            showPage('quiz');
+            loadQuestion();
+        }
+        
+        // 全屏切换
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(function(err) {
+                    console.log('全屏模式被拒绝:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // 监听全屏变化，更新按钮图标
+        document.addEventListener('fullscreenchange', function() {
+            var btn = document.getElementById('fullscreenBtn');
+            if (document.fullscreenElement) {
+                btn.textContent = '⛶';
+            } else {
+                btn.textContent = '⛶';
+            }
+        });
+        
+        // 加载题目
+        function loadQuestion() {
+            var painting = paintingsData[currentQuestion];
+            
+            document.getElementById('progressText').textContent = '第 ' + (currentQuestion + 1) + ' / ' + paintingsData.length + ' 题';
+            document.getElementById('progressScore').textContent = '得分: ' + score;
+            document.getElementById('paintingImg').src = 'assets/images/' + painting.image;
+            
+            var optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            painting.options.forEach(function(option, index) {
+                var label = document.createElement('label');
+                label.className = 'option-label';
+                label.innerHTML = '<span class="option-marker">' + String.fromCharCode(65 + index) + '</span>' +
+                    '<input type="radio" name="answer" value="' + option + '" onchange="selectOption(this.value)">' +
+                    '<span class="option-text">' + option + '</span>';
+                optionsContainer.appendChild(label);
+            });
+            
+            selectedOption = null;
+            document.getElementById('submitBtn').disabled = true;
+        }
+        
+        // 选择选项
+        function selectOption(option) {
+            selectedOption = option;
+            document.getElementById('submitBtn').disabled = false;
+        }
+        
+        // 提交答案
+        function submitAnswer() {
+            if (!selectedOption) return;
+            
+            var painting = paintingsData[currentQuestion];
+            var isCorrect = selectedOption === painting.title;
+            
+            if (isCorrect) {
+                score++;
+            }
+            
+            showPage('feedback');
+            showFeedback(isCorrect, painting);
+        }
+        
+        // 显示反馈
+        function showFeedback(isCorrect, painting) {
+            var video = document.getElementById('feedbackVideo');
+            var explanationSection = document.getElementById('explanationSection');
+            
+            video.src = isCorrect ? 'assets/videos/laugh.mp4' : 'assets/videos/sad.mp4';
+            video.volume = 1.0;
+            explanationSection.style.opacity = '0';
+            
+            if (isCorrect) {
+                // 答对：播放大笑视频（有声音），结束后显示"懂你意思"
+                video.onended = function() {
+                    document.getElementById('paintingTitle').textContent = painting.title;
+                    document.getElementById('explanationText').textContent = '懂你意思';
+                    explanationSection.style.opacity = '1';
+                };
+                video.onerror = function() {
+                    document.getElementById('paintingTitle').textContent = painting.title;
+                    document.getElementById('explanationText').textContent = '懂你意思';
+                    explanationSection.style.opacity = '1';
+                };
+            } else {
+                // 答错：播放忧郁视频（有声音），同时显示100字讲解
+                video.onloadeddata = function() {
+                    showExplanation(painting);
+                };
+                setTimeout(function() { showExplanation(painting); }, 500);
+            }
+        }
+        
+        // 显示讲解（打字机效果）
+        function showExplanation(painting) {
+            document.getElementById('paintingTitle').textContent = 
+                painting.title + ' - ' + painting.artist + ' (' + painting.year + ')';
+            document.getElementById('explanationSection').style.opacity = '1';
+            
+            var text = painting.explanation;
+            var element = document.getElementById('explanationText');
+            element.textContent = '';
+            
+            var i = 0;
+            var speed = 50;
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // 停止当前视频
+        function stopCurrentVideo() {
+            var feedbackVideo = document.getElementById('feedbackVideo');
+            if (feedbackVideo) {
+                feedbackVideo.pause();
+                feedbackVideo.currentTime = 0;
+                feedbackVideo.src = '';
+            }
+        }
+        
+        // 下一题
+        function nextQuestion() {
+            stopCurrentVideo();
+            currentQuestion++;
+            
+            if (currentQuestion >= paintingsData.length) {
+                showPage('complete');
+                playPassVideo();
+            } else {
+                showPage('quiz');
+                loadQuestion();
+            }
+        }
+        
+        // 播放通关视频
+        function playPassVideo() {
+            var video = document.getElementById('passVideo');
+            video.volume = 1.0;
+            video.onended = function() {
+                document.getElementById('finalMessage').style.opacity = '1';
+            };
+            video.onerror = function() {
+                document.getElementById('finalMessage').style.opacity = '1';
+            };
+        }
+        
+        // 重新开始
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            showPage('landing');
+        }
+        
+        // 页面加载时
+        window.onload = function() {
+        };
+    </script>
+</body>
+</html>
