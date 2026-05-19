@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/submission.js"></script>
     <style>
         /* 页面切换动画 */
         .page {
@@ -271,10 +272,10 @@
                 <div id="user-header" class="user-header">
                     <div id="user-info" style="display:none">
                         <span class="username"></span>
-                        <button id="logout-btn" class="logout-btn">\u9000\u51fa</button>
+                        <button id="logout-btn" class="logout-btn">退出</button>
                     </div>
                     <div id="guest-info">
-                        <button id="header-login-btn" class="header-login-btn">\u767b\u5f55</button>
+                        <button id="header-login-btn" class="header-login-btn">登录</button>
                     </div>
                 </div>
                 <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="landing-nailong">
@@ -285,9 +286,12 @@
                     这里收藏了奶龙穿越世界名画的珍贵影像。<br>
                     你能认出这些名画的原作吗？
                 </p>
-                <button class="enter-btn" onclick="enterQuiz()">
-                    进入美术馆
-                </button>
+                <div class="button-group">
+                    <button class="enter-btn" onclick="enterQuiz()">
+                        进入美术馆
+                    </button>
+                    <button class="submit-entry-btn" onclick="enterSubmit()">投稿作品</button>
+                </div>
             </div>
         </div>
         
@@ -360,6 +364,53 @@
             </div>
         </div>
         
+        <!-- 页面5：投稿页 -->
+        <div class="page" id="page-submit">
+          <div class="submit-container">
+            <h2 class="submit-title">投稿作品</h2>
+            <p class="submit-desc">分享你的奶龙艺术创作，让更多人猜猜这是哪幅名画！</p>
+            
+            <div class="submit-form">
+              <!-- 图片上传区域 -->
+              <div class="upload-area" id="uploadArea">
+                <input type="file" id="imageInput" accept="image/*" hidden>
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                  <span class="upload-icon">📷</span>
+                  <p>点击上传奶龙改编名画</p>
+                  <p class="upload-hint">支持 JPG, PNG 格式</p>
+                </div>
+                <img id="previewImage" class="preview-image" style="display: none;">
+                <button id="removeImage" class="remove-image" style="display: none;">×</button>
+              </div>
+              
+              <!-- 原画信息 -->
+              <div class="form-group">
+                <label>原画名称</label>
+                <input type="text" id="originalTitle" placeholder="例如：《蒙娜丽莎》">
+              </div>
+              
+              <div class="form-group">
+                <label>原画艺术家（可选）</label>
+                <input type="text" id="originalArtist" placeholder="例如：达芬奇">
+              </div>
+              
+              <button id="submitBtn" class="submit-artwork-btn" disabled>提交投稿</button>
+              
+              <div id="submitMessage" class="submit-message"></div>
+            </div>
+            
+            <!-- 我的投稿 -->
+            <div class="my-submissions">
+              <h3>我的投稿</h3>
+              <div id="submissionsList" class="submissions-list">
+                <p class="empty-text">暂无投稿</p>
+              </div>
+            </div>
+            
+            <button class="back-btn" onclick="showPage('landing')">返回首页</button>
+          </div>
+        </div>
+        
     </main>
 
     <script src="js/paintings-data.js"></script>
@@ -391,6 +442,17 @@
     showPage('quiz');
     loadQuestion();
 }
+        
+        // 进入投稿页面
+        function enterSubmit() {
+          const currentUser = authManager.currentUser;
+          if (!currentUser) {
+            authManager.showModal();
+            return;
+          }
+          showPage('submit');
+          loadMySubmissions();
+        }
         
         // 全屏切换
         function toggleFullscreen() {
@@ -561,5 +623,3 @@
     </script>
 </body>
 </html>
-
-

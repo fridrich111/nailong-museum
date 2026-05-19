@@ -868,3 +868,262 @@ body:-moz-full-screen {
         margin-bottom: 1rem;
     }
 }
+/* ===== 鎶曠椤甸潰鏍峰紡 ===== */
+.submit-container {
+  max-width: 600px;
+  width: 100%;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.submit-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: var(--antique-gold);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.submit-desc {
+  text-align: center;
+  color: rgba(245, 245, 220, 0.8);
+  margin-bottom: 2rem;
+}
+
+.submit-form {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* 涓婁紶鍖哄煙 */
+.upload-area {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  border: 2px dashed rgba(201, 162, 39, 0.5);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.upload-area:hover {
+  border-color: var(--antique-gold);
+  background: rgba(201, 162, 39, 0.05);
+}
+
+.upload-placeholder {
+  text-align: center;
+  color: rgba(245, 245, 220, 0.6);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.remove-image {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* 鎻愪氦鎸夐挳 */
+.submit-artwork-btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+  color: var(--deep-indigo);
+  background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+.submit-artwork-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(255, 217, 61, 0.3);
+}
+
+.submit-artwork-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 鎻愮ず淇℃伅 */
+.submit-message {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+}
+
+.submit-message.success {
+  background: rgba(0, 255, 0, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.submit-message.error {
+  background: rgba(255, 0, 0, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+/* 鎴戠殑鎶曠 */
+.my-submissions {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.my-submissions h3 {
+  color: var(--antique-gold);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.submission-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.submission-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.submission-info {
+  flex: 1;
+}
+
+.submission-title {
+  color: var(--nailong-yellow);
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.submission-artist {
+  color: rgba(245, 245, 220, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.submission-status {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.submission-status.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.submission-status.approved {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.submission-status.rejected {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.empty-text, .loading-text, .error-text {
+  text-align: center;
+  color: rgba(245, 245, 220, 0.5);
+  padding: 2rem;
+}
+
+/* 杩斿洖鎸夐挳 */
+.back-btn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: 2px solid var(--antique-gold);
+  border-radius: 10px;
+  color: var(--antique-gold);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: var(--antique-gold);
+  color: var(--deep-indigo);
+}
+
+/* 棣栭〉鎸夐挳缁?*/
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.submit-entry-btn {
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 500;
+  color: var(--antique-gold);
+  background: transparent;
+  border: 2px solid var(--antique-gold);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submit-entry-btn:hover {
+  background: var(--antique-gold);
+  color: var(--deep-indigo);
+}
