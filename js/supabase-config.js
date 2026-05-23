@@ -1,11 +1,6 @@
-// Supabase client init config
+﻿// Supabase client init config
 var SUPABASE_URL = 'https://datenwietosgfprmxcua.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable_m_E8-AmJo1tMuAI8ZphX1g_TBGK3CN6';
-
-// 检查 API Key 格式
-if (!SUPABASE_ANON_KEY.startsWith('eyJ')) {
-    console.warn('警告: Supabase API Key 格式可能不正确，请检查 Dashboard 中的 anon key（正确格式应以 eyJ 开头）');
-}
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdGVud2lldG9zZ2Zwcm14Y3VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODQ1MzgsImV4cCI6MjA5NDc2MDUzOH0.07g82Otjv8SIxN_YIc3PYm0GLlF9wYwDQyJBkhUD0ME';
 
 try {
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
