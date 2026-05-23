@@ -6,44 +6,93 @@
     <title>奶龙美术馆 - fridrich-of-ntu</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
 </head>
 <body class="home-page">
     <div class="museum-bg"></div>
-    
+
     <!-- 全屏按钮 -->
-    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
-        ⛶
-    </button>
-    
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="btn-label">全屏</span>
+    </div>
+
     <!-- 背景音乐控制 -->
-    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
-        🎵
-    </button>
-    
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+            🎵
+        </button>
+        <span class="btn-label">音乐</span>
+    </div>
+
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="auto">
         <!-- 使用免费的舒缓音乐CDN -->
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
     </audio>
-    
+
+    <!-- 登录/用户信息区域 -->
+    <div id="auth-container" class="auth-container">
+        <div id="user-info" style="display:none">
+            <span class="username-display"></span>
+            <button onclick="authManager.logout()" class="auth-btn">退出</button>
+        </div>
+        <div id="login-prompt">
+            <button onclick="authManager.showModal()" class="auth-btn">登录 / 注册</button>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="auth-close" onclick="authManager.hideModal()">&times;</button>
+            <div id="auth-error" class="auth-error"></div>
+            <div id="auth-success" class="auth-success"></div>
+            <div id="login-form" class="auth-form">
+                <h3>登录</h3>
+                <input type="email" id="login-email" placeholder="邮箱" autocomplete="email">
+                <input type="password" id="login-password" placeholder="密码" autocomplete="current-password">
+                <button id="login-submit" class="auth-submit-btn">登录</button>
+                <div class="divider"><span>或</span></div>
+                <button class="wechat-btn" disabled>微信登录（即将开放）</button>
+                <p class="auth-switch">还没有账号？<a href="#" id="switch-to-register">注册</a></p>
+            </div>
+            <div id="register-form" class="auth-form" style="display:none">
+                <h3>注册</h3>
+                <input type="text" id="register-username" placeholder="用户名" autocomplete="username">
+                <input type="email" id="register-email" placeholder="邮箱" autocomplete="email">
+                <input type="password" id="register-password" placeholder="密码（至少6位）" autocomplete="new-password">
+                <input type="password" id="register-confirm-password" placeholder="确认密码" autocomplete="new-password">
+                <button id="register-submit" class="auth-submit-btn">注册</button>
+                <div class="divider"><span>或</span></div>
+                <button class="wechat-btn" disabled>微信注册（即将开放）</button>
+                <p class="auth-switch">已有账号？<a href="#" id="switch-to-login">登录</a></p>
+            </div>
+        </div>
+    </div>
+
     <main class="container">
         <div class="hero-section">
             <div class="nailong-container">
                 <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="nailong-img">
                 <div class="glow-effect"></div>
             </div>
-            
+
             <h1 class="museum-title">
                 <span class="title-main">奶龙美术馆</span>
                 <span class="title-sub">Nailong Art Museum</span>
             </h1>
-            
+
             <p class="museum-desc">
                 欢迎来到奶龙美术馆！<br>
                 这里收藏了奶龙穿越世界名画的珍贵影像。<br>
                 你能认出这些名画的原作吗？
             </p>
-            
+
             <button class="start-btn" onclick="startQuiz()">
                 <span class="btn-text">开始挑战</span>
                 <span class="btn-shine"></span>
@@ -56,7 +105,7 @@
         window.addEventListener('load', function() {
             const bgMusic = document.getElementById('bgMusic');
             bgMusic.volume = 0.15; // 设置音量为15%
-            
+
             // 尝试自动播放
             const playPromise = bgMusic.play();
             if (playPromise !== undefined) {
@@ -66,12 +115,12 @@
                 });
             }
         });
-        
+
         // 音乐开关
         function toggleAudio() {
             const bgMusic = document.getElementById('bgMusic');
             const audioControl = document.getElementById('audioControl');
-            
+
             if (bgMusic.paused) {
                 bgMusic.play();
                 audioControl.textContent = '🎵';
@@ -82,18 +131,36 @@
                 audioControl.classList.add('muted');
             }
         }
-        
+
         // 全屏切换
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log('全屏模式被拒绝:', err);
                 });
+                localStorage.setItem('wasFullscreen', 'true');
             } else {
                 document.exitFullscreen();
+                localStorage.removeItem('wasFullscreen');
             }
         }
-        
+
+        // 初始化登录状态
+        window.addEventListener('load', function() {
+            if (typeof authManager !== 'undefined') {
+                authManager.init();
+            }
+        });
+
+        // 页面加载时恢复全屏状态
+        if (localStorage.getItem('wasFullscreen') === 'true') {
+            document.addEventListener('click', function restoreFS() {
+                document.documentElement.requestFullscreen().catch(() => {});
+                localStorage.removeItem('wasFullscreen');
+                document.removeEventListener('click', restoreFS);
+            }, { once: true });
+        }
+
         // 开始答题
         function startQuiz() {
             localStorage.setItem('currentQuestion', '0');

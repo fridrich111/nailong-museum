@@ -9,22 +9,28 @@
 </head>
 <body>
     <div class="museum-bg"></div>
-    
+
     <!-- 全屏按钮 -->
-    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
-        ⛶
-    </button>
-    
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="btn-label">全屏</span>
+    </div>
+
     <!-- 背景音乐控制 -->
-    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
-        🎵
-    </button>
-    
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+            🎵
+        </button>
+        <span class="btn-label">音乐</span>
+    </div>
+
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="auto">
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
     </audio>
-    
+
     <main class="container">
         <div class="complete-container">
             <div class="pass-video">
@@ -32,15 +38,15 @@
                     <source src="assets/videos/pass.mp4" type="video/mp4">
                 </video>
             </div>
-            
+
             <h1 class="final-message" id="finalMessage" style="display: none;">
                 可我觉得很神圣啊！
             </h1>
-            
+
             <p class="final-quote" id="finalQuote" style="display: none;">
                 —— 奶龙
             </p>
-            
+
             <button class="restart-btn" id="restartBtn" onclick="restartQuiz()" style="display: none;">
                 再来一次
             </button>
@@ -51,25 +57,25 @@
         // 初始化
         function init() {
             const video = document.getElementById('passVideo');
-            
+
             // 视频播放结束后显示文字
             video.onended = function() {
                 showFinalMessage();
             };
-            
+
             // 如果视频加载失败，直接显示文字
             video.onerror = function() {
                 showFinalMessage();
             };
-            
+
             initAudio();
         }
-        
+
         // 初始化音频
         function initAudio() {
             const bgMusic = document.getElementById('bgMusic');
             bgMusic.volume = 0.15;
-            
+
             const playPromise = bgMusic.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
@@ -77,12 +83,12 @@
                 });
             }
         }
-        
+
         // 音乐开关
         function toggleAudio() {
             const bgMusic = document.getElementById('bgMusic');
             const audioControl = document.getElementById('audioControl');
-            
+
             if (bgMusic.paused) {
                 bgMusic.play();
                 audioControl.textContent = '🎵';
@@ -93,30 +99,32 @@
                 audioControl.classList.add('muted');
             }
         }
-        
+
         // 全屏切换
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log('全屏模式被拒绝:', err);
                 });
+                localStorage.setItem('wasFullscreen', 'true');
             } else {
                 document.exitFullscreen();
+                localStorage.removeItem('wasFullscreen');
             }
         }
-        
+
         // 显示最终文字
         function showFinalMessage() {
             document.getElementById('finalMessage').style.display = 'block';
             document.getElementById('finalQuote').style.display = 'block';
             document.getElementById('restartBtn').style.display = 'inline-block';
-            
+
             // 添加淡入动画
             setTimeout(() => {
                 document.getElementById('finalMessage').style.opacity = '1';
             }, 100);
         }
-        
+
         // 重新开始
         function restartQuiz() {
             localStorage.removeItem('currentQuestion');
@@ -125,7 +133,16 @@
             localStorage.removeItem('lastPainting');
             window.location.href = 'index.html';
         }
-        
+
+        // 页面加载时恢复全屏状态
+        if (localStorage.getItem('wasFullscreen') === 'true') {
+            document.addEventListener('click', function restoreFS() {
+                document.documentElement.requestFullscreen().catch(() => {});
+                localStorage.removeItem('wasFullscreen');
+                document.removeEventListener('click', restoreFS);
+            }, { once: true });
+        }
+
         // 页面加载时初始化
         window.onload = init;
     </script>

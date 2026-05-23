@@ -11,14 +11,20 @@
     <div class="museum-bg"></div>
     
     <!-- 全屏按钮 -->
-    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
-        ⛶
-    </button>
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="btn-label">全屏</span>
+    </div>
     
     <!-- 背景音乐控制 -->
-    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
-        🎵
-    </button>
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+            🎵
+        </button>
+        <span class="btn-label">音乐</span>
+    </div>
     
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="auto">
@@ -28,7 +34,7 @@
     <main class="container">
         <div class="feedback-container">
             <div class="video-container" id="videoContainer">
-                <video id="feedbackVideo" autoplay playsinline muted>
+                <video id="feedbackVideo" autoplay playsinline>
                     <source src="" type="video/mp4">
                 </video>
             </div>
@@ -50,6 +56,25 @@
     <script>
         let isCorrect = false;
         let painting = null;
+
+        // 音频管理：暂停背景音乐，播放视频音效
+        function manageAudioForVideo() {
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic && !bgMusic.paused) {
+                bgMusic.pause();
+                localStorage.setItem('bgMusicWasPlaying', 'true');
+            }
+        }
+        
+        // 恢复背景音乐
+        function restoreBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            const wasPlaying = localStorage.getItem('bgMusicWasPlaying') === 'true';
+            if (bgMusic && wasPlaying) {
+                bgMusic.play().catch(() => {});
+                localStorage.removeItem('bgMusicWasPlaying');
+            }
+        }
         
         // 初始化
         function init() {
@@ -66,15 +91,18 @@
             
             // 播放对应视频
             const video = document.getElementById('feedbackVideo');
+            manageAudioForVideo();
             video.src = isCorrect ? 'assets/videos/laugh.mp4' : 'assets/videos/sad.mp4';
             
             if (isCorrect) {
                 // 答对：视频播放结束后显示"懂你意思"
                 video.onended = function() {
                     showCorrectMessage();
+                    restoreBackgroundMusic();
                 };
                 video.onerror = function() {
                     showCorrectMessage();
+                    restoreBackgroundMusic();
                 };
             } else {
                 // 答错：视频和讲解同时显示
@@ -83,6 +111,7 @@
                 };
                 // 如果视频加载慢，500ms后强制显示讲解
                 setTimeout(showExplanation, 500);
+                setTimeout(function() { restoreBackgroundMusic(); }, 3000);
             }
             
             initAudio();
@@ -92,13 +121,7 @@
         function initAudio() {
             const bgMusic = document.getElementById('bgMusic');
             bgMusic.volume = 0.15;
-            
-            const playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log('自动播放被阻止');
-                });
-            }
+            // 不自动播放，等视频结束后恢复
         }
         
         // 音乐开关
@@ -123,8 +146,10 @@
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log('全屏模式被拒绝:', err);
                 });
+                localStorage.setItem('wasFullscreen', 'true');
             } else {
                 document.exitFullscreen();
+                localStorage.removeItem('wasFullscreen');
             }
         }
         
@@ -177,6 +202,15 @@
             }
         }
         
+        // 页面加载时恢复全屏状态
+        if (localStorage.getItem('wasFullscreen') === 'true') {
+            document.addEventListener('click', function restoreFS() {
+                document.documentElement.requestFullscreen().catch(() => {});
+                localStorage.removeItem('wasFullscreen');
+                document.removeEventListener('click', restoreFS);
+            }, { once: true });
+        }
+
         // 页面加载时初始化
         window.onload = init;
     </script>

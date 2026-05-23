@@ -9,42 +9,65 @@
 </head>
 <body>
     <div class="museum-bg"></div>
-    
+
     <!-- 全屏按钮 -->
-    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
-        ⛶
-    </button>
-    
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="btn-label">全屏</span>
+    </div>
+
     <!-- 背景音乐控制 -->
-    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
-        🎵
-    </button>
-    
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+            🎵
+        </button>
+        <span class="btn-label">音乐</span>
+    </div>
+
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="auto">
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
     </audio>
-    
+
+    <!-- 答题卡按钮 -->
+    <div class="btn-with-label answer-card-label-wrapper">
+        <button class="answer-card-btn" onclick="showAnswerCard()" title="答题卡">
+            📋
+        </button>
+        <span class="btn-label">答题卡</span>
+    </div>
+
     <main class="container">
         <div class="quiz-container">
             <div class="progress-bar">
                 <span class="progress-text" id="progressText">第 1 / 23 题</span>
                 <span class="progress-score" id="progressScore">得分: 0</span>
             </div>
-            
+
             <div class="painting-frame">
                 <img src="" alt="奶龙改编名画" class="painting-img" id="paintingImg">
             </div>
-            
+
             <h2 class="question-text">这幅画改编自哪幅世界名画？</h2>
-            
+
             <div class="options-container" id="optionsContainer">
                 <!-- 选项将通过JS动态生成 -->
             </div>
-            
+
             <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>
                 确认答案
             </button>
+        </div>
+
+        <!-- 答题卡弹窗 -->
+        <div id="answerCardModal" class="answer-card-modal">
+            <div class="answer-card-content">
+                <button class="answer-card-close" onclick="hideAnswerCard()">&times;</button>
+                <h3>答题卡</h3>
+                <div class="answer-card-grid" id="answerCardGrid"></div>
+            </div>
         </div>
     </main>
 
@@ -53,31 +76,31 @@
         let currentQuestion = 0;
         let score = 0;
         let selectedOption = null;
-        
+
         // 初始化
         function init() {
             const savedQuestion = localStorage.getItem('currentQuestion');
             const savedScore = localStorage.getItem('score');
-            
+
             if (savedQuestion !== null) {
                 currentQuestion = parseInt(savedQuestion);
                 score = parseInt(savedScore || '0');
             }
-            
+
             if (currentQuestion >= paintingsData.length) {
                 window.location.href = 'complete.html';
                 return;
             }
-            
+
             loadQuestion();
             initAudio();
         }
-        
+
         // 初始化音频
         function initAudio() {
             const bgMusic = document.getElementById('bgMusic');
             bgMusic.volume = 0.15;
-            
+
             // 尝试恢复播放
             const playPromise = bgMusic.play();
             if (playPromise !== undefined) {
@@ -86,12 +109,12 @@
                 });
             }
         }
-        
+
         // 音乐开关
         function toggleAudio() {
             const bgMusic = document.getElementById('bgMusic');
             const audioControl = document.getElementById('audioControl');
-            
+
             if (bgMusic.paused) {
                 bgMusic.play();
                 audioControl.textContent = '🎵';
@@ -102,33 +125,35 @@
                 audioControl.classList.add('muted');
             }
         }
-        
+
         // 全屏切换
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
                     console.log('全屏模式被拒绝:', err);
                 });
+                localStorage.setItem('wasFullscreen', 'true');
             } else {
                 document.exitFullscreen();
+                localStorage.removeItem('wasFullscreen');
             }
         }
-        
+
         // 加载题目
         function loadQuestion() {
             const painting = paintingsData[currentQuestion];
-            
+
             // 更新进度
             document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} / ${paintingsData.length} 题`;
             document.getElementById('progressScore').textContent = `得分: ${score}`;
-            
+
             // 加载图片
             document.getElementById('paintingImg').src = `assets/images/${painting.image}`;
-            
+
             // 生成选项
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
-            
+
             painting.options.forEach((option, index) => {
                 const label = document.createElement('label');
                 label.className = 'option-label';
@@ -139,39 +164,87 @@
                 `;
                 optionsContainer.appendChild(label);
             });
-            
+
             // 重置选择
             selectedOption = null;
             document.getElementById('submitBtn').disabled = true;
         }
-        
+
         // 选择选项
         function selectOption(option) {
             selectedOption = option;
             document.getElementById('submitBtn').disabled = false;
         }
-        
+
         // 提交答案
         function submitAnswer() {
             if (!selectedOption) return;
-            
+
             const painting = paintingsData[currentQuestion];
             const isCorrect = selectedOption === painting.title;
-            
+
             if (isCorrect) {
                 score++;
             }
-            
+
             // 保存进度
             localStorage.setItem('currentQuestion', (currentQuestion + 1).toString());
             localStorage.setItem('score', score.toString());
             localStorage.setItem('lastAnswerCorrect', isCorrect.toString());
             localStorage.setItem('lastPainting', JSON.stringify(painting));
-            
+
+            // 记录已答题目
+            let answeredQuestions = JSON.parse(localStorage.getItem('answeredQuestions') || '[]');
+            if (!answeredQuestions.includes(currentQuestion)) {
+                answeredQuestions.push(currentQuestion);
+                localStorage.setItem('answeredQuestions', JSON.stringify(answeredQuestions));
+            }
+
             // 跳转到反馈页
             window.location.href = 'feedback.html';
         }
-        
+
+        // 显示答题卡
+        function showAnswerCard() {
+            const modal = document.getElementById('answerCardModal');
+            const grid = document.getElementById('answerCardGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < paintingsData.length; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'answer-card-cell';
+                cell.textContent = i + 1;
+                if (i === currentQuestion) cell.classList.add('current');
+                const savedProgress = localStorage.getItem('answeredQuestions');
+                if (savedProgress) {
+                    const answered = JSON.parse(savedProgress);
+                    if (answered.includes(i)) cell.classList.add('answered');
+                }
+                cell.onclick = function() { jumpToQuestion(i); };
+                grid.appendChild(cell);
+            }
+            modal.style.display = 'flex';
+        }
+
+        function hideAnswerCard() {
+            document.getElementById('answerCardModal').style.display = 'none';
+        }
+
+        function jumpToQuestion(questionIndex) {
+            currentQuestion = questionIndex;
+            localStorage.setItem('currentQuestion', questionIndex.toString());
+            hideAnswerCard();
+            loadQuestion();
+        }
+
+        // 页面加载时恢复全屏状态
+        if (localStorage.getItem('wasFullscreen') === 'true') {
+            document.addEventListener('click', function restoreFS() {
+                document.documentElement.requestFullscreen().catch(() => {});
+                localStorage.removeItem('wasFullscreen');
+                document.removeEventListener('click', restoreFS);
+            }, { once: true });
+        }
+
         // 页面加载时初始化
         window.onload = init;
     </script>
