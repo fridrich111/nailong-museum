@@ -1,210 +1,215 @@
 // 23幅名画题目数据
-var paintingsData = [
+const paintingsData = [
     {
         id: 1,
         image: "art1_001.jpg",
-        title: "\u300a\u6885\u675c\u8428\u4e4b\u7b4f\u300b",
-        artist: "\u7c4d\u91cc\u67ef",
+        title: "《梅杜萨之筏》",
+        artist: "籍里柯",
         year: "1819",
-        options: ["\u300a\u6885\u675c\u8428\u4e4b\u7b4f\u300b", "\u300a\u81ea\u7531\u5f15\u5bfc\u4eba\u6c11\u300b", "\u300a\u62ff\u7834\u4ed1\u52a0\u5195\u300b", "\u300a\u8377\u62c9\u65af\u5144\u5f1f\u4e4b\u8a93\u300b"],
-        explanation: "\u6cd5\u56fd\u6d6a\u6f2b\u4e3b\u4e49\u753b\u5bb6\u7c4d\u91cc\u67ef\u7684\u4ee3\u8868\u4f5c\uff0c\u63cf\u7ed8\u4e861816\u5e74\u6885\u675c\u8428\u53f7\u6d77\u96be\u540e\u5e78\u5b58\u8005\u5728\u6728\u7b4f\u4e0a\u7edd\u671b\u6c42\u751f\u7684\u573a\u666f\u3002\u5976\u9f99\u4eec\u6324\u5728\u7b4f\u5b50\u4e0a\u7684\u6837\u5b50\uff0c\u819c\u540d\u6709\u70b9\u559c\u611f\u2026\u2026"
+        options: ["《梅杜萨之筏》", "《自由引导人民》", "《拿破仑加冕》", "《荷拉斯兄弟之誓》"],
+        explanation: "法国浪漫主义画家籍里柯的杰作，描绘了梅杜萨号海难幸存者在木筏上绝望求生的场景。奶龙们挤在筏子上的样子，莫名有点喜感..."
     },
     {
         id: 2,
         image: "art1_004.jpg",
-        title: "\u300a\u53d7\u5c01\u300b",
-        artist: "\u57c3\u5fb7\u8499\u00b7\u5e03\u83b1\u5c14\u00b7\u83b1\u987f",
+        title: "《受封》",
+        artist: "埃德蒙·布莱尔·莱顿",
         year: "1901",
-        options: ["\u300a\u53d7\u5c01\u300b", "\u300a\u4e9a\u745f\u738b\u4f20\u5947\u300b", "\u300a\u5723\u5973\u8d1e\u5fb7\u300b", "\u300a\u5706\u684c\u9a91\u58eb\u300b"],
-        explanation: "\u82f1\u56fd\u753b\u5bb6\u83b1\u987f\u7b14\u4e0b\u7684\u4e2d\u4e16\u7eaa\u9a91\u58eb\u6388\u52cb\u4eea\u5f0f\u3002\u5f53\u5976\u9f99\u5355\u819d\u8dea\u5730\u63a5\u53d7\u5973\u738b\u518c\u5c01\u65f6\uff0c\u4e25\u8083\u7684\u5386\u53f2\u77ac\u95f4\u53d8\u5f97\u840c\u840c\u54d2\uff5e"
+        options: ["《受封》", "《亚瑟王传奇》", "《圣女贞德》", "《圆桌骑士》"],
+        explanation: "英国画家莱顿笔下的中世纪骑士授勋仪式。当奶龙单膝跪地接受女王册封时，严肃的历史瞬间变得萌萌哒~"
     },
     {
         id: 3,
         image: "art1_007.jpg",
-        title: "\u300a\u591c\u95f4\u7684\u9732\u5929\u5496\u5561\u5ea7\u300b",
-        artist: "\u68b5\u9ad8",
+        title: "《夜间的露天咖啡座》",
+        artist: "梵高",
         year: "1888",
-        options: ["\u300a\u591c\u95f4\u7684\u9732\u5929\u5496\u5561\u5ea7\u300b", "\u300a\u661f\u6708\u591c\u300b", "\u300a\u5411\u65e5\u8475\u300b", "\u300a\u9ea6\u7530\u4e0e\u4e4c\u9e26\u300b"],
-        explanation: "\u68b5\u9ad8\u5728\u963f\u5c14\u52d2\u65f6\u671f\u7684\u4ee3\u8868\u4f5c\uff0c\u63cf\u7ed8\u4e86\u591c\u665a\u5496\u5561\u9986\u7684\u6e29\u6696\u6c1b\u56f4\u3002\u5976\u9f99\u4eec\u5728\u8fd9\u91cc\u805a\u4f1a\uff0c\u4f1a\u4e0d\u4f1a\u70b9\u4e00\u676f\u9f99\u820c\u5170\uff1f"
+        options: ["《夜间的露天咖啡座》", "《星月夜》", "《向日葵》", "《麦田与乌鸦》"],
+        explanation: "梵高在阿尔勒时期的代表作，描绘了夜晚咖啡馆的温暖氛围。奶龙们在这里聚会，会不会点一杯龙舌兰？"
     },
     {
         id: 4,
         image: "art1_010.jpg",
-        title: "\u300a\u5411\u65e5\u8475\u300b",
-        artist: "\u68b5\u9ad8",
+        title: "《向日葵》",
+        artist: "梵高",
         year: "1888",
-        options: ["\u300a\u5411\u65e5\u8475\u300b", "\u300a\u7761\u83b2\u300b", "\u300a\u65e5\u51fa\u00b7\u5370\u8c61\u300b", "\u300a\u8349\u5730\u4e0a\u7684\u5348\u9910\u300b"],
-        explanation: "\u68b5\u9ad8\u6700\u8457\u540d\u7684\u9759\u7269\u753b\u7cfb\u5217\uff0c\u91d1\u9ec4\u8272\u7684\u5411\u65e5\u8475\u8c61\u5f81\u7740\u751f\u547d\u7684\u70ed\u60c5\u3002\u5976\u9f99\u548c\u5411\u65e5\u8475\uff0c\u8c01\u66f4\u9ec4\uff1f"
+        options: ["《向日葵》", "《睡莲》", "《日出·印象》", "《草地上的午餐》"],
+        explanation: "梵高最著名的静物画系列，金黄色的向日葵象征着生命的热情。奶龙和向日葵，谁更黄？"
     },
     {
         id: 5,
         image: "art1_013.jpg",
-        title: "\u300a\u8499\u5a1c\u4e3d\u838e\u300b",
-        artist: "\u8fbe\u82ac\u5947",
+        title: "《蒙娜丽莎》",
+        artist: "达芬奇",
         year: "1503",
-        options: ["\u300a\u8499\u5a1c\u4e3d\u838e\u300b", "\u300a\u6234\u73cd\u73e0\u8033\u73af\u7684\u5c11\u5973\u300b", "\u300a\u96c5\u5178\u5b66\u9662\u300b", "\u300a\u897f\u65af\u5ef7\u5723\u6bcd\u300b"],
-        explanation: "\u4e16\u754c\u4e0a\u6700\u8457\u540d\u7684\u8096\u50cf\u753b\uff0c\u8fbe\u82ac\u5947\u7b14\u4e0b\u7684\u795e\u79d8\u5fae\u7b11\u3002\u5976\u9f99\u7248\u7684\u8499\u5a1c\u4e3d\u838e\uff0c\u7b11\u5bb9\u66f4\u52a0\u9b54\u6027\u4e86\u2026\u2026"
+        options: ["《蒙娜丽莎》", "《戴珍珠耳环的少女》", "《雅典学院》", "《西斯廷圣母》"],
+        explanation: "世界上最著名的肖像画，达芬奇笔下的神秘微笑。奶龙版的蒙娜丽莎，笑容更加魔性了..."
     },
     {
         id: 6,
         image: "art1_006.jpg",
-        title: "\u300a\u6491\u9633\u4f1e\u7684\u5973\u4eba\u300b",
-        artist: "\u83ab\u5948",
+        title: "《撑阳伞的女人》",
+        artist: "莫奈",
         year: "1875",
-        options: ["\u300a\u6491\u9633\u4f1e\u7684\u5973\u4eba\u300b", "\u300a\u8349\u5730\u4e0a\u7684\u5348\u9910\u300b", "\u300a\u5305\u53a2\u300b", "\u300a\u821e\u8e48\u8bfe\u300b"],
-        explanation: "\u83ab\u5948\u63cf\u7ed8\u59bb\u5b50\u5361\u7c73\u5c14\u548c\u513f\u5b50\u5728\u8349\u5730\u4e0a\u7684\u6e29\u99a8\u573a\u666f\u3002\u5976\u9f99\u5988\u5988\u5e26\u7740\u5c0f\u9f99\uff0c\u753b\u9762\u592a\u6cbb\u6108\u4e86\uff01"
+        options: ["《撑阳伞的女人》", "《草地上的午餐》", "《包厢》", "《舞蹈课》"],
+        explanation: "莫奈描绘妻子卡米尔和儿子在草地上的温馨场景。奶龙妈妈带着小龙，画面太治愈了！"
     },
     {
         id: 7,
         image: "art1_012.jpg",
-        title: "\u300a\u521b\u9020\u4e9a\u5f53\u300b",
-        artist: "\u7c73\u5f00\u6717\u57fa\u7f57",
+        title: "《创造亚当》",
+        artist: "米开朗基罗",
         year: "1512",
-        options: ["\u300a\u521b\u9020\u4e9a\u5f53\u300b", "\u300a\u6700\u540e\u7684\u5ba1\u5224\u300b", "\u300a\u5927\u536b\u300b", "\u300a\u54c0\u60bc\u57fa\u7763\u300b"],
-        explanation: "\u897f\u65af\u5ef7\u793c\u62dc\u5802\u5929\u9876\u753b\u7684\u6838\u5fc3\uff0c\u4e0a\u5e1d\u4e0e\u4e9a\u5f53\u624b\u6307\u76f8\u89e6\u7684\u77ac\u95f4\u3002\u5976\u9f99\u7248\uff1a\u795e\u8bf4\u8981\u6709\u9f99\uff0c\u4e8e\u662f\u6709\u4e86\u5976\u9f99\u3002"
+        options: ["《创造亚当》", "《最后的审判》", "《大卫》", "《哀悼基督》"],
+        explanation: "西斯廷礼拜堂天顶画的核心，上帝与亚当手指相触的瞬间。奶龙版：神说要有龙，于是有了奶龙。"
     },
     {
         id: 8,
         image: "art1_015.jpg",
-        title: "\u300a\u821e\u8e48\u300b",
-        artist: "\u9a6c\u8482\u65af",
+        title: "《舞蹈》",
+        artist: "马蒂斯",
         year: "1910",
-        options: ["\u300a\u821e\u8e48\u300b", "\u300a\u97f3\u4e50\u300b", "\u300a\u7ea2\u8272\u753b\u5ba4\u300b", "\u300a\u751f\u6d3b\u7684\u6b22\u4e50\u300b"],
-        explanation: "\u91ce\u517d\u6d3e\u5927\u5e08\u9a6c\u8482\u65af\u7684\u4ee3\u8868\u4f5c\uff0c\u4e94\u4e2a\u624b\u62c9\u624b\u8df3\u821e\u7684\u88f8\u5973\u3002\u5976\u9f99\u4eec\u56f4\u6210\u5708\u8df3\u821e\uff0c\u753b\u9762\u819c\u540d\u548c\u8c10\u2026\u2026"
+        options: ["《舞蹈》", "《音乐》", "《红色画室》", "《生活的欢乐》"],
+        explanation: "野兽派大师马蒂斯的代表作，五个手拉手跳舞的裸女。奶龙们围成圈跳舞，画面莫名和谐~"
     },
     {
         id: 9,
         image: "art2_003.jpg",
-        title: "\u300a\u54f2\u5b66\u5bb6\u5728\u51a5\u60f3\u300b",
-        artist: "\u4f26\u52c3\u6717",
+        title: "《哲学家在冥想》",
+        artist: "伦勃朗",
         year: "1632",
-        options: ["\u300a\u54f2\u5b66\u5bb6\u5728\u51a5\u60f3\u300b", "\u300a\u591c\u5de1\u300b", "\u300a\u6234\u91d1\u76d4\u7684\u7537\u5b50\u300b", "\u300a\u72b9\u592a\u65b0\u5a18\u300b"],
-        explanation: "\u4f26\u52c3\u6717\u7b14\u4e0b\u7684\u5b66\u8005\u5728\u70db\u5149\u4e0b\u6c89\u601d\u3002\u5976\u9f99\u54f2\u5b66\u5bb6\u601d\u8003\u7684\u662f\uff1a\u4eca\u5929\u5403\u4ec0\u4e48\uff1f"
+        options: ["《哲学家在冥想》", "《夜巡》", "《戴金盔的男子》", "《犹太新娘》"],
+        explanation: "伦勃朗笔下的学者在烛光下沉思。奶龙哲学家思考的是：今天吃什么？"
     },
     {
         id: 10,
         image: "art2_005.jpg",
-        title: "\u300a\u53d7\u5c01\u300b",
-        artist: "\u57c3\u5fb7\u8499\u00b7\u5e03\u83b1\u5c14\u00b7\u83b1\u987f",
+        title: "《受封》",
+        artist: "埃德蒙·布莱尔·莱顿",
         year: "1901",
-        options: ["\u300a\u53d7\u5c01\u300b", "\u300a\u4e9a\u745f\u738b\u4f20\u5947\u300b", "\u300a\u5723\u5973\u8d1e\u5fb7\u300b", "\u300a\u5706\u684c\u9a91\u58eb\u300b"],
-        explanation: "\u53c8\u662f\u8fd9\u5e45\u753b\uff01\u770b\u6765\u5976\u9f99\u5f88\u559c\u6b22\u5f53\u9a91\u58eb\u5462\u3002\u8fd9\u6b21\u80fd\u7b54\u5bf9\u5417\uff1f"
+        options: ["《受封》", "《亚瑟王传奇》", "《圣女贞德》", "《圆桌骑士》"],
+        explanation: "又是这幅画！看来奶龙很喜欢当骑士呢。这次能答对吗？"
     },
     {
         id: 11,
         image: "art2_004.jpg",
-        title: "\u300a\u62fe\u7a57\u8005\u300b",
-        artist: "\u7c73\u52d2",
+        title: "《拾穗者》",
+        artist: "米勒",
         year: "1857",
-        options: ["\u300a\u62fe\u7a57\u8005\u300b", "\u300a\u64ad\u79cd\u8005\u300b", "\u300a\u665a\u949f\u300b", "\u300a\u7267\u7f8a\u5973\u300b"],
-        explanation: "\u5df4\u6bd4\u677e\u753b\u6d3e\u7c73\u52d2\u7684\u4ee3\u8868\u4f5c\uff0c\u63cf\u7ed8\u519c\u6c11\u5728\u7530\u95f4\u62fe\u9ea6\u7a57\u7684\u573a\u666f\u3002\u5976\u9f99\u4e5f\u8981\u8f9b\u52e4\u52b3\u52a8\u5440\uff01"
+        options: ["《拾穗者》", "《播种者》", "《晚钟》", "《牧羊女》"],
+        explanation: "巴比松画派米勒的代表作，描绘农民在田间拾麦穗的场景。奶龙也要辛勤劳动呀！"
     },
     {
         id: 12,
         image: "art2_007.jpg",
-        title: "\u300a\u661f\u6708\u591c\u300b",
-        artist: "\u68b5\u9ad8",
+        title: "《星月夜》",
+        artist: "梵高",
         year: "1889",
-        options: ["\u300a\u661f\u6708\u591c\u300b", "\u300a\u5411\u65e5\u8475\u300b", "\u300a\u9ea6\u7530\u300b", "\u300a\u674f\u82b1\u300b"],
-        explanation: "\u68b5\u9ad8\u5728\u5723\u96f7\u7c73\u7cbe\u795e\u75c5\u9662\u671f\u95f4\u521b\u4f5c\u7684\u6770\u4f5c\uff0c\u65cb\u8f6c\u7684\u661f\u7a7a\u5145\u6ee1\u52a8\u611f\u3002\u5976\u9f99\u5728\u661f\u7a7a\u4e0b\uff0c\u4f1a\u4e0d\u4f1a\u4e5f\u8ddf\u7740\u8f6c\u8d77\u6765\uff1f"
+        options: ["《星月夜》", "《向日葵》", "《麦田》", "《杏花》"],
+        explanation: "梵高在圣雷米精神病院期间创作的杰作，旋转的星空充满动感。奶龙在星空下，会不会也跟着转起来？"
     },
     {
         id: 13,
         image: "art2_008.jpg",
-        title: "\u300a\u5450\u558a\u300b",
-        artist: "\u8499\u514b",
+        title: "《呐喊》",
+        artist: "蒙克",
         year: "1893",
-        options: ["\u300a\u5450\u558a\u300b", "\u300a\u751f\u547d\u4e4b\u821e\u300b", "\u300a\u75c5\u5b69\u300b", "\u300a\u5361\u5c14\u00b7\u7ea6\u7ff0\u8857\u7684\u591c\u665a\u300b"],
-        explanation: "\u8868\u73b0\u4e3b\u4e49\u5927\u5e08\u8499\u514b\u7684\u6807\u5fd7\u6027\u4f5c\u54c1\uff0c\u90a3\u4e2a\u6342\u8138\u5c16\u53eb\u7684\u5f62\u8c61\u6df1\u5165\u4eba\u5fc3\u3002\u5976\u9f99\u5450\u558a\uff1a\u6211\u997f\u4e86\uff01"
+        options: ["《呐喊》", "《生命之舞》", "《病孩》", "《卡尔·约翰街的夜晚》"],
+        explanation: "表现主义大师蒙克的标志性作品，那个捂脸尖叫的形象深入人心。奶龙呐喊：我饿了！"
     },
     {
         id: 14,
         image: "art3_001.jpg",
-        title: "\u300a\u5931\u4e50\u56ed\u300b",
-        artist: "\u53e4\u65af\u5854\u592b\u00b7\u591a\u96f7",
+        title: "《失乐园》",
+        artist: "古斯塔夫·多雷",
         year: "1866",
-        options: ["\u300a\u5931\u4e50\u56ed\u300b", "\u300a\u795e\u66f2\u300b", "\u300a\u5723\u7ecf\u63d2\u56fe\u300b", "\u300a\u5802\u5409\u8bc3\u5fb7\u300b"],
-        explanation: "\u591a\u96f7\u4e3a\u5f25\u5c14\u987f\u300a\u5931\u4e50\u56ed\u300b\u521b\u4f5c\u7684\u63d2\u56fe\uff0c\u63cf\u7ed8\u5929\u4f7f\u957f\u7c73\u52a0\u52d2\u9a71\u9010\u4e9a\u5f53\u590f\u5a03\u3002\u5976\u9f99\u5929\u4f7f\uff0c\u753b\u98ce\u7a81\u53d8\uff01"
+        options: ["《失乐园》", "《神曲》", "《圣经插图》", "《堂吉诃德》"],
+        explanation: "多雷为弥尔顿《失乐园》创作的插图，描绘天使长米迦勒驱逐亚当夏娃。奶龙天使，画风突变！"
     },
     {
         id: 15,
         image: "art3_002.jpg",
-        title: "\u300a\u57fa\u7763\u53d7\u6d17\u300b",
-        artist: "\u97e6\u7f57\u57fa\u5965\u548c\u8fbe\u82ac\u5947",
+        title: "《基督受洗》",
+        artist: "韦罗基奥&达芬奇",
         year: "1475",
-        options: ["\u300a\u57fa\u7763\u53d7\u6d17\u300b", "\u300a\u5929\u4f7f\u62a5\u559c\u300b", "\u300a\u4e09\u738b\u6765\u671d\u300b", "\u300a\u57fa\u7763\u53d7\u96be\u300b"],
-        explanation: "\u97e6\u7f57\u57fa\u5965\u5de5\u4f5c\u5ba4\u7684\u4f5c\u54c1\uff0c\u636e\u8bf4\u5de6\u8fb9\u7684\u5929\u4f7f\u662f\u5e74\u8f7b\u7684\u8fbe\u82ac\u5947\u753b\u7684\u3002\u5976\u9f99\u5929\u4f7f\uff0c\u4e5f\u662f\u5927\u5e08\u4e4b\u4f5c\uff01"
+        options: ["《基督受洗》", "《天使报喜》", "《三王来朝》", "《基督受难》"],
+        explanation: "韦罗基奥工作室的作品，据说左边的天使是年轻的达芬奇画的。奶龙天使，也是大师之作！"
     },
     {
         id: 16,
         image: "art3_003.jpg",
-        title: "\u300a\u5450\u558a\u300b",
-        artist: "\u8499\u514b",
+        title: "《呐喊》",
+        artist: "蒙克",
         year: "1893",
-        options: ["\u300a\u5450\u558a\u300b", "\u300a\u751f\u547d\u4e4b\u821e\u300b", "\u300a\u75c5\u5b69\u300b", "\u300a\u5361\u5c14\u00b7\u7ea6\u7ff0\u8857\u7684\u591c\u665a\u300b"],
-        explanation: "\u53c8\u662f\u300a\u5450\u558a\u300b\uff01\u770b\u6765\u5976\u9f99\u771f\u7684\u5f88\u559c\u6b22\u8fd9\u5e45\u753b\u3002\u8fd9\u6b21\u7b54\u5bf9\u4e86\u5417\uff1f"
+        options: ["《呐喊》", "《生命之舞》", "《病孩》", "《卡尔·约翰街的夜晚》"],
+        explanation: "又是《呐喊》！看来奶龙真的很喜欢这幅画。这次答对了吗？"
     },
     {
         id: 17,
         image: "art3_005.jpg",
-        title: "\u300a\u53d7\u5c01\u300b",
-        artist: "\u57c3\u5fb7\u8499\u00b7\u5e03\u83b1\u5c14\u00b7\u83b1\u987f",
+        title: "《受封》",
+        artist: "埃德蒙·布莱尔·莱顿",
         year: "1901",
-        options: ["\u300a\u53d7\u5c01\u300b", "\u300a\u4e9a\u745f\u738b\u4f20\u5947\u300b", "\u300a\u5723\u5973\u8d1e\u5fb7\u300b", "\u300a\u5706\u684c\u9a91\u58eb\u300b"],
-        explanation: "\u7b2c\u4e09\u6b21\u51fa\u73b0\u300a\u53d7\u5c01\u300b\uff01\u5976\u9f99\u662f\u591a\u60f3\u5f53\u9a91\u58eb\u554a\u3002\u8fd9\u6b21\u4e00\u5b9a\u4e0d\u4f1a\u9519\u4e86\u5427\uff1f"
+        options: ["《受封》", "《亚瑟王传奇》", "《圣女贞德》", "《圆桌骑士》"],
+        explanation: "第三次出现《受封》！奶龙是多想当骑士啊。这次一定不会错了吧？"
     },
     {
         id: 18,
         image: "art4_001.jpg",
-        title: "\u300a\u72b9\u5927\u4e4b\u543b\u300b",
-        artist: "\u4e54\u6258",
+        title: "《犹大之吻》",
+        artist: "乔托",
         year: "1305",
-        options: ["\u300a\u72b9\u5927\u4e4b\u543b\u300b", "\u300a\u6700\u540e\u7684\u665a\u9910\u300b", "\u300a\u57fa\u7763\u53d7\u96be\u300b", "\u300a\u590d\u6d3b\u300b"],
-        explanation: "\u6587\u827a\u590d\u5174\u5148\u9a71\u4e54\u6258\u7684\u4ee3\u8868\u4f5c\uff0c\u63cf\u7ed8\u72b9\u5927\u51fa\u5356\u8036\u7a23\u7684\u80cc\u53db\u4e4b\u543b\u3002\u5976\u9f99\u7248\uff1a\u8fd9\u662f\u53cb\u597d\u7684\u4eb2\u4eb2\uff01"
+        options: ["《犹大之吻》", "《最后的晚餐》", "《基督受难》", "《复活》"],
+        explanation: "文艺复兴先驱乔托的代表作，描绘犹大出卖耶稣的背叛之吻。奶龙版：这是友好的亲亲！"
     },
     {
         id: 19,
         image: "art4_002.jpg",
-        title: "\u300a\u54c8\u52d2\u59c6\u7684\u5723\u6bcd\u300b",
-        artist: "\u5b89\u5fb7\u70c8\u4e9a\u00b7\u5fb7\u5c14\u00b7\u8428\u5c14\u6258",
+        title: "《哈勒姆的圣母》",
+        artist: "安德烈亚·德尔·萨尔托",
         year: "1517",
-        options: ["\u300a\u54c8\u52d2\u59c6\u7684\u5723\u6bcd\u300b", "\u300a\u897f\u65af\u5ef7\u5723\u6bcd\u300b", "\u300a\u5ca9\u95f4\u5723\u6bcd\u300b", "\u300a\u5723\u6bcd\u5b50\u300b"],
-        explanation: "\u6587\u827a\u590d\u5174\u65f6\u671f\u8428\u5c14\u6258\u7684\u5723\u6bcd\u50cf\uff0c\u5145\u6ee1\u6e29\u60c5\u4e0e\u795e\u5723\u3002\u5976\u9f99\u5723\u6bcd\uff0c\u4fdd\u4f51\u5927\u5bb6\u5929\u5929\u5f00\u5fc3\uff01"
+        options: ["《哈勒姆的圣母》", "《西斯廷圣母》", "《岩间圣母》", "《圣母子》"],
+        explanation: "文艺复兴时期萨尔托的圣母像，充满温情与神圣。奶龙圣母，保佑大家天天开心！"
     },
     {
         id: 20,
         image: "art4_005.jpg",
-        title: "\u300a\u79cb\u5343\u300b",
-        artist: "\u5f17\u62c9\u6208\u7eb3\u5c14",
+        title: "《秋千》",
+        artist: "弗拉戈纳尔",
         year: "1767",
-        options: ["\u300a\u79cb\u5343\u300b", "\u300a\u95e8\u95e9\u300b", "\u300a\u6d74\u5973\u300b", "\u300a\u7231\u7684\u544a\u767d\u300b"],
-        explanation: "\u6d1b\u53ef\u53ef\u98ce\u683c\u4ee3\u8868\uff0c\u63cf\u7ed8\u8d35\u65cf\u5c11\u5973\u8361\u79cb\u5343\u7684\u6d6a\u6f2b\u573a\u666f\u3002\u5976\u9f99\u8361\u79cb\u5343\uff0c\u88d9\u5b50\u98de\u8d77\u6765\u5566\uff01"
+        options: ["《秋千》", "《门闩》", "《浴女》", "《爱的告白》"],
+        explanation: "洛可可风格代表，描绘贵族少女荡秋千的浪漫场景。奶龙荡秋千，裙子飞起来啦！"
     },
     {
         id: 21,
         image: "art4_006.jpg",
-        title: "\u300a\u963f\u5c14\u8bfa\u82ac\u5c3c\u592b\u5987\u4e8b\u50cf\u300b",
-        artist: "\u626c\u00b7\u51e1\u00b7\u827e\u514b",
+        title: "《阿尔诺芬尼夫妇像》",
+        artist: "扬·凡·艾克",
         year: "1434",
-        options: ["\u300a\u963f\u5c14\u8bfa\u82ac\u5c3c\u592b\u5987\u4e8b\u50cf\u300b", "\u300a\u6839\u7279\u796d\u575b\u753b\u300b", "\u300a\u5929\u4f7f\u62a5\u559c\u300b", "\u300a\u5723\u6bcd\u4e0e\u5bb0\u76f8\u7f57\u6797\u300b"],
-        explanation: "\u5317\u65b9\u6587\u827a\u590d\u5174\u6770\u4f5c\uff0c\u7ec6\u8282\u4e30\u5bcc\u5230\u4ee4\u4eba\u53d1\u6307\u3002\u5976\u9f99\u592b\u5987\uff0c\u767e\u5e74\u597d\u5408\uff01"
+        options: ["《阿尔诺芬尼夫妇像》", "《根特祭坛画》", "《天使报喜》", "《圣母与宰相罗林》"],
+        explanation: "北方文艺复兴杰作，细节丰富到令人发指。奶龙夫妇，百年好合！"
     },
     {
         id: 22,
         image: "art4_007.jpg",
-        title: "\u300a\u52a0\u6b47\u533b\u751f\u50cf\u300b",
-        artist: "\u68b5\u9ad8",
+        title: "《加歇医生像》",
+        artist: "梵高",
         year: "1890",
-        options: ["\u300a\u52a0\u6b47\u533b\u751f\u50cf\u300b", "\u300a\u81ea\u753b\u50cf\u300b", "\u300a\u90ae\u9012\u5458\u9c81\u5170\u300b", "\u300a\u5609\u820d\u533b\u5e08\u7684\u82b1\u56ed\u300b"],
-        explanation: "\u68b5\u9ad8\u4e3a\u6cbb\u7597\u4ed6\u7684\u52a0\u6b47\u533b\u751f\u753b\u7684\u8096\u50cf\uff0c\u5fe7\u90c1\u7684\u84dd\u8272\u8c03\u3002\u5976\u9f99\u533b\u751f\uff1a\u4f60\u75c5\u5f97\u4e0d\u8f7b\u554a\uff01"
+        options: ["《加歇医生像》", "《自画像》", "《邮递员鲁兰》", "《嘉舍医师的花园》"],
+        explanation: "梵高为治疗他的加歇医生画的肖像，忧郁的蓝色调。奶龙医生：你病得不轻啊！"
     },
     {
         id: 23,
         image: "art4_008.jpg",
-        title: "\u300a\u8239\u4e0a\u7684\u5348\u5bb4\u300b",
-        artist: "\u96f7\u8bfa\u963f",
+        title: "《船上的午宴》",
+        artist: "雷诺阿",
         year: "1881",
-        options: ["\u300a\u8239\u4e0a\u7684\u5348\u5bb4\u300b", "\u300a\u714e\u997c\u78e8\u574a\u7684\u821e\u4f1a\u300b", "\u300a\u5305\u53a2\u300b", "\u300a\u6e38\u8247\u4e0a\u7684\u5348\u9910\u300b"],
-        explanation: "\u5370\u8c61\u6d3e\u5927\u5e08\u96f7\u8bfa\u963f\u63cf\u7ed8\u670b\u53cb\u4eec\u5728\u585e\u7eb3\u6cb3\u7554\u805a\u9910\u7684\u6b22\u4e50\u573a\u666f\u3002\u5976\u9f99\u4e5f\u60f3\u53c2\u52a0\u6d3e\u5bf9\uff01"
+        options: ["《船上的午宴》", "《煎饼磨坊的舞会》", "《包厢》", "《游艇上的午餐》"],
+        explanation: "印象派大师雷诺阿描绘朋友们在塞纳河畔聚餐的欢乐场景。奶龙也想参加派对！"
     }
 ];
+
+// 导出数据
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = paintingsData;
+}

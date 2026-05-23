@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>奶龙美术馆 - fridrich-of-ntu</title>
+    <title>挑战完成 - 奶龙美术馆</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="home-page">
+<body>
     <div class="museum-bg"></div>
     
     <!-- 全屏按钮 -->
@@ -22,50 +22,61 @@
     
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="auto">
-        <!-- 使用免费的舒缓音乐CDN -->
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
     </audio>
     
     <main class="container">
-        <div class="hero-section">
-            <div class="nailong-container">
-                <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="nailong-img">
-                <div class="glow-effect"></div>
+        <div class="complete-container">
+            <div class="pass-video">
+                <video id="passVideo" autoplay playsinline muted>
+                    <source src="assets/videos/pass.mp4" type="video/mp4">
+                </video>
             </div>
             
-            <h1 class="museum-title">
-                <span class="title-main">奶龙美术馆</span>
-                <span class="title-sub">Nailong Art Museum</span>
+            <h1 class="final-message" id="finalMessage" style="display: none;">
+                可我觉得很神圣啊！
             </h1>
             
-            <p class="museum-desc">
-                欢迎来到奶龙美术馆！<br>
-                这里收藏了奶龙穿越世界名画的珍贵影像。<br>
-                你能认出这些名画的原作吗？
+            <p class="final-quote" id="finalQuote" style="display: none;">
+                —— 奶龙
             </p>
             
-            <button class="start-btn" onclick="startQuiz()">
-                <span class="btn-text">开始挑战</span>
-                <span class="btn-shine"></span>
+            <button class="restart-btn" id="restartBtn" onclick="restartQuiz()" style="display: none;">
+                再来一次
             </button>
         </div>
     </main>
 
     <script>
-        // 自动播放背景音乐（音量较小）
-        window.addEventListener('load', function() {
-            const bgMusic = document.getElementById('bgMusic');
-            bgMusic.volume = 0.15; // 设置音量为15%
+        // 初始化
+        function init() {
+            const video = document.getElementById('passVideo');
             
-            // 尝试自动播放
+            // 视频播放结束后显示文字
+            video.onended = function() {
+                showFinalMessage();
+            };
+            
+            // 如果视频加载失败，直接显示文字
+            video.onerror = function() {
+                showFinalMessage();
+            };
+            
+            initAudio();
+        }
+        
+        // 初始化音频
+        function initAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.15;
+            
             const playPromise = bgMusic.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    // 自动播放被阻止，等待用户交互
-                    console.log('自动播放被阻止，等待用户交互');
+                    console.log('自动播放被阻止');
                 });
             }
-        });
+        }
         
         // 音乐开关
         function toggleAudio() {
@@ -94,12 +105,29 @@
             }
         }
         
-        // 开始答题
-        function startQuiz() {
-            localStorage.setItem('currentQuestion', '0');
-            localStorage.setItem('score', '0');
-            window.location.href = 'quiz.html';
+        // 显示最终文字
+        function showFinalMessage() {
+            document.getElementById('finalMessage').style.display = 'block';
+            document.getElementById('finalQuote').style.display = 'block';
+            document.getElementById('restartBtn').style.display = 'inline-block';
+            
+            // 添加淡入动画
+            setTimeout(() => {
+                document.getElementById('finalMessage').style.opacity = '1';
+            }, 100);
         }
+        
+        // 重新开始
+        function restartQuiz() {
+            localStorage.removeItem('currentQuestion');
+            localStorage.removeItem('score');
+            localStorage.removeItem('lastAnswerCorrect');
+            localStorage.removeItem('lastPainting');
+            window.location.href = 'index.html';
+        }
+        
+        // 页面加载时初始化
+        window.onload = init;
     </script>
 </body>
 </html>

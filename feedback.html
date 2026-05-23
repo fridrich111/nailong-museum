@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题反馈 - 奶龙美术馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="museum-bg"></div>
+    
+    <!-- 全屏按钮 -->
+    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+        ⛶
+    </button>
+    
+    <!-- 背景音乐控制 -->
+    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+        🎵
+    </button>
+    
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
+    </audio>
+    
+    <main class="container">
+        <div class="feedback-container">
+            <div class="video-container" id="videoContainer">
+                <video id="feedbackVideo" autoplay playsinline muted>
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+            
+            <div class="explanation-section" id="explanationSection">
+                <img src="assets/images/thinking-nailong.jpg" alt="沉思奶龙" class="thinking-nailong">
+                <div class="speech-bubble">
+                    <h3 class="explanation-title" id="paintingTitle"></h3>
+                    <p class="explanation-text" id="explanationText"></p>
+                </div>
+            </div>
+            
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+                下一题
+            </button>
+        </div>
+    </main>
+
+    <script>
+        let isCorrect = false;
+        let painting = null;
+        
+        // 初始化
+        function init() {
+            const correctStr = localStorage.getItem('lastAnswerCorrect');
+            const paintingStr = localStorage.getItem('lastPainting');
+            
+            if (!correctStr || !paintingStr) {
+                window.location.href = 'quiz.html';
+                return;
+            }
+            
+            isCorrect = correctStr === 'true';
+            painting = JSON.parse(paintingStr);
+            
+            // 播放对应视频
+            const video = document.getElementById('feedbackVideo');
+            video.src = isCorrect ? 'assets/videos/laugh.mp4' : 'assets/videos/sad.mp4';
+            
+            if (isCorrect) {
+                // 答对：视频播放结束后显示"懂你意思"
+                video.onended = function() {
+                    showCorrectMessage();
+                };
+                video.onerror = function() {
+                    showCorrectMessage();
+                };
+            } else {
+                // 答错：视频和讲解同时显示
+                video.onloadeddata = function() {
+                    showExplanation();
+                };
+                // 如果视频加载慢，500ms后强制显示讲解
+                setTimeout(showExplanation, 500);
+            }
+            
+            initAudio();
+        }
+        
+        // 初始化音频
+        function initAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.15;
+            
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('自动播放被阻止');
+                });
+            }
+        }
+        
+        // 音乐开关
+        function toggleAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            const audioControl = document.getElementById('audioControl');
+            
+            if (bgMusic.paused) {
+                bgMusic.play();
+                audioControl.textContent = '🎵';
+                audioControl.classList.remove('muted');
+            } else {
+                bgMusic.pause();
+                audioControl.textContent = '🔇';
+                audioControl.classList.add('muted');
+            }
+        }
+        
+        // 全屏切换
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('全屏模式被拒绝:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // 答对后显示"懂你意思"
+        function showCorrectMessage() {
+            document.getElementById('paintingTitle').textContent = painting.title;
+            document.getElementById('explanationText').textContent = '懂你意思';
+            document.getElementById('explanationSection').style.opacity = '1';
+        }
+        
+        // 显示讲解（答错时）
+        function showExplanation() {
+            document.getElementById('paintingTitle').textContent = 
+                `${painting.title} - ${painting.artist} (${painting.year})`;
+            document.getElementById('explanationSection').style.opacity = '1';
+            
+            // 打字机效果
+            typeWriterEffect();
+        }
+        
+        // 打字机效果
+        function typeWriterEffect() {
+            const text = painting.explanation;
+            const element = document.getElementById('explanationText');
+            element.textContent = '';
+            
+            let i = 0;
+            const speed = 50;
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // 下一题
+        function nextQuestion() {
+            const currentQuestion = parseInt(localStorage.getItem('currentQuestion') || '0');
+            const totalQuestions = 23;
+            
+            if (currentQuestion >= totalQuestions) {
+                window.location.href = 'complete.html';
+            } else {
+                window.location.href = 'quiz.html';
+            }
+        }
+        
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+</body>
+</html>

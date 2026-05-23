@@ -1,0 +1,6 @@
+# 静态文件，无需构建
+/node_modules
+/.git
+*.log
+.DS_Store
+Thumbs.db

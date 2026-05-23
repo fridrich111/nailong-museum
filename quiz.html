@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题挑战 - 奶龙美术馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="museum-bg"></div>
+    
+    <!-- 全屏按钮 -->
+    <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+        ⛶
+    </button>
+    
+    <!-- 背景音乐控制 -->
+    <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+        🎵
+    </button>
+    
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
+    </audio>
+    
+    <main class="container">
+        <div class="quiz-container">
+            <div class="progress-bar">
+                <span class="progress-text" id="progressText">第 1 / 23 题</span>
+                <span class="progress-score" id="progressScore">得分: 0</span>
+            </div>
+            
+            <div class="painting-frame">
+                <img src="" alt="奶龙改编名画" class="painting-img" id="paintingImg">
+            </div>
+            
+            <h2 class="question-text">这幅画改编自哪幅世界名画？</h2>
+            
+            <div class="options-container" id="optionsContainer">
+                <!-- 选项将通过JS动态生成 -->
+            </div>
+            
+            <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>
+                确认答案
+            </button>
+        </div>
+    </main>
+
+    <script src="js/paintings-data.js"></script>
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        
+        // 初始化
+        function init() {
+            const savedQuestion = localStorage.getItem('currentQuestion');
+            const savedScore = localStorage.getItem('score');
+            
+            if (savedQuestion !== null) {
+                currentQuestion = parseInt(savedQuestion);
+                score = parseInt(savedScore || '0');
+            }
+            
+            if (currentQuestion >= paintingsData.length) {
+                window.location.href = 'complete.html';
+                return;
+            }
+            
+            loadQuestion();
+            initAudio();
+        }
+        
+        // 初始化音频
+        function initAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.15;
+            
+            // 尝试恢复播放
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('自动播放被阻止');
+                });
+            }
+        }
+        
+        // 音乐开关
+        function toggleAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            const audioControl = document.getElementById('audioControl');
+            
+            if (bgMusic.paused) {
+                bgMusic.play();
+                audioControl.textContent = '🎵';
+                audioControl.classList.remove('muted');
+            } else {
+                bgMusic.pause();
+                audioControl.textContent = '🔇';
+                audioControl.classList.add('muted');
+            }
+        }
+        
+        // 全屏切换
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('全屏模式被拒绝:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // 加载题目
+        function loadQuestion() {
+            const painting = paintingsData[currentQuestion];
+            
+            // 更新进度
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} / ${paintingsData.length} 题`;
+            document.getElementById('progressScore').textContent = `得分: ${score}`;
+            
+            // 加载图片
+            document.getElementById('paintingImg').src = `assets/images/${painting.image}`;
+            
+            // 生成选项
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            painting.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.innerHTML = `
+                    <span class="option-marker">${String.fromCharCode(65 + index)}</span>
+                    <input type="radio" name="answer" value="${option}" onchange="selectOption('${option}')">
+                    <span class="option-text">${option}</span>
+                `;
+                optionsContainer.appendChild(label);
+            });
+            
+            // 重置选择
+            selectedOption = null;
+            document.getElementById('submitBtn').disabled = true;
+        }
+        
+        // 选择选项
+        function selectOption(option) {
+            selectedOption = option;
+            document.getElementById('submitBtn').disabled = false;
+        }
+        
+        // 提交答案
+        function submitAnswer() {
+            if (!selectedOption) return;
+            
+            const painting = paintingsData[currentQuestion];
+            const isCorrect = selectedOption === painting.title;
+            
+            if (isCorrect) {
+                score++;
+            }
+            
+            // 保存进度
+            localStorage.setItem('currentQuestion', (currentQuestion + 1).toString());
+            localStorage.setItem('score', score.toString());
+            localStorage.setItem('lastAnswerCorrect', isCorrect.toString());
+            localStorage.setItem('lastPainting', JSON.stringify(painting));
+            
+            // 跳转到反馈页
+            window.location.href = 'feedback.html';
+        }
+        
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
