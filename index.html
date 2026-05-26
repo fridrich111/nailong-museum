@@ -20,6 +20,25 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     
+    <!-- 移动端优化 -->
+    <style>
+        /* 移动端使用压缩背景 */
+        @media (max-width: 768px) {
+            .museum-bg {
+                background-image: url('assets/images/starry-night-bg.jpg');
+                opacity: 0.2;
+            }
+        }
+        /* 减少动画性能消耗 */
+        @media (max-width: 768px) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+    
 </head>
 <body class="home-page">
     <div class="museum-bg"></div>
@@ -150,7 +169,7 @@
 <main class="container">
         <div class="hero-section">
             <div class="nailong-container">
-                <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="nailong-img">
+                <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="nailong-img" loading="lazy" decoding="async" width="300" height="300" style="max-width:100%;height:auto;">
                 <div class="glow-effect"></div>
             </div>
 
@@ -174,7 +193,15 @@
 
     <script>
         // 自动播放背景音乐（音量较小）
+        // 检测是否为移动设备
+        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
         window.addEventListener('load', function() {
+            // 移动端不自动播放音频
+            if (isMobile) {
+                console.log('移动设备 detected，跳过音频自动加载');
+                return;
+            }
             const bgMusic = document.getElementById('bgMusic');
             bgMusic.volume = 0.15; // 设置音量为15%
 

@@ -39,6 +39,8 @@ body:-moz-full-screen {
 
 /* 星空奶龙背景 */
 .museum-bg {
+    contain: layout style paint;
+    content-visibility: auto;
     position: fixed;
     top: 0;
     left: 0;
@@ -427,6 +429,8 @@ body:-moz-full-screen {
 }
 
 .nailong-container {
+    will-change: transform;
+    transform: translateZ(0); /* 开启GPU加速 */
     position: relative;
     display: inline-block;
     margin-bottom: 2rem;
