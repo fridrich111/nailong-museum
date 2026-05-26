@@ -137,18 +137,122 @@
         // 加载原画
         function loadOriginalPainting() {
             document.getElementById('nailongPainting').src = 'assets/images/' + painting.image;
-            // 使用 WikiArt 或其他来源的原画URL
             var originalUrls = {
-                '《梅杜萨之筏》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg/800px-JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg',
-                '《夜间的露天咖啡座》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg/800px-Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg',
-                '《向日葵》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/800px-Vincent_Willem_van_Gogh_127.jpg',
-                '《蒙娜丽莎》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
-                '《创造亚当》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Creaci%C3%B3n_de_Ad%C3%A1m.jpg/800px-Creaci%C3%B3n_de_Ad%C3%A1m.jpg',
-                '《撑阳伞的女人》': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_National_Gallery_of_Art.jpg'
+                '《梅杜萨之筏》': {
+                    primary: 'https://i.see.you/2026/05/26/xL3w/medusa_raft.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg/960px-JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg',
+                    local: 'assets/images/originals/medusa_raft.jpg'
+                },
+                '《受封》': {
+                    primary: 'https://i.see.you/2026/05/26/yq8Q/the_accolade.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Accolade_by_Edmund_Blair_Leighton.jpg/960px-Accolade_by_Edmund_Blair_Leighton.jpg',
+                    local: 'assets/images/originals/the_accolade.jpg'
+                },
+                '《夜间的露天咖啡座》': {
+                    primary: 'https://i.see.you/2026/05/26/Ydb3/cafe_terrace.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg/960px-Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg',
+                    local: 'assets/images/originals/cafe_terrace.jpg'
+                },
+                '《向日葵》': {
+                    primary: 'https://i.see.you/2026/05/26/7vEv/sunflowers.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/960px-Vincent_Willem_van_Gogh_127.jpg',
+                    local: 'assets/images/originals/sunflowers.jpg'
+                },
+                '《蒙娜丽莎》': {
+                    primary: 'https://i.see.you/2026/05/26/8ySo/mona_lisa.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/960px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
+                    local: 'assets/images/originals/mona_lisa.jpg'
+                },
+                '《创造亚当》': {
+                    primary: 'https://i.see.you/2026/05/26/5lzJ/creation_of_adam.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Creaci%C3%B3n_de_Ad%C3%A1m.jpg/960px-Creaci%C3%B3n_de_Ad%C3%A1m.jpg',
+                    local: 'assets/images/originals/creation_of_adam.jpg'
+                },
+                '《舞蹈》': {
+                    primary: 'https://i.see.you/2026/05/26/5lCl/dance.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Henri_Matisse_-_Dance_1910.jpg/960px-Henri_Matisse_-_Dance_1910.jpg',
+                    local: 'assets/images/originals/dance.jpg'
+                },
+                '《哲学家在冥想》': {
+                    primary: 'https://i.see.you/2026/05/26/9gxO/philosopher_meditation.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Rembrandt_-_The_Philosopher_in_Meditation.jpg/960px-Rembrandt_-_The_Philosopher_in_Meditation.jpg',
+                    local: 'assets/images/originals/philosopher_meditation.jpg'
+                },
+                '《拾穗者》': {
+                    primary: 'https://i.see.you/2026/05/26/t5Iu/gleaners.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Jean-Fran%C3%A7ois_Millet_-_Gleaners_-_Google_Art_Project_2.jpg/960px-Jean-Fran%C3%A7ois_Millet_-_Gleaners_-_Google_Art_Project_2.jpg',
+                    local: 'assets/images/originals/gleaners.jpg'
+                },
+                '《星月夜》': {
+                    primary: 'https://i.see.you/2026/05/26/sUe8/starry_night.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/VanGogh-starry_night.jpg/960px-VanGogh-starry_night.jpg',
+                    local: 'assets/images/originals/starry_night.jpg'
+                },
+                '《呐喊》': {
+                    primary: 'https://i.see.you/2026/05/26/z6Gs/scream.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Edvard_Munch_-_The_Scream_-_Google_Art_Project.jpg/960px-Edvard_Munch_-_The_Scream_-_Google_Art_Project.jpg',
+                    local: 'assets/images/originals/scream.jpg'
+                },
+                '《失乐园》': {
+                    primary: 'https://i.see.you/2026/05/26/G7dg/paradise_lost.png',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Adam_and_Eve_expelled_from_Paradise.png/960px-Adam_and_Eve_expelled_from_Paradise.png',
+                    local: 'assets/images/originals/paradise_lost.png'
+                },
+                '《基督受洗》': {
+                    primary: 'https://i.see.you/2026/05/26/ogR5/baptism_christ.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Andrea_del_Verrocchio%2C_Leonardo_da_Vinci_-_Baptism_of_Christ_-_Uffizi.jpg/960px-Andrea_del_Verrocchio%2C_Leonardo_da_Vinci_-_Baptism_of_Christ_-_Uffizi.jpg',
+                    local: 'assets/images/originals/baptism_christ.jpg'
+                },
+                '《犹大之吻》': {
+                    primary: 'https://i.see.you/2026/05/26/Mkw3/kiss_judas.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Giotto_-_Scrovegni_-_-31-_-_Kiss_of_Judas.jpg/960px-Giotto_-_Scrovegni_-_-31-_-_Kiss_of_Judas.jpg',
+                    local: 'assets/images/originals/kiss_judas.jpg'
+                },
+                '《哈勒姆的圣母》': {
+                    primary: 'https://i.see.you/2026/05/26/h1mR/madonna_harpies.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Andrea_del_Sarto_-_Madonna_delle_Arpie_-_Google_Art_Project.jpg/960px-Andrea_del_Sarto_-_Madonna_delle_Arpie_-_Google_Art_Project.jpg',
+                    local: 'assets/images/originals/madonna_harpies.jpg'
+                },
+                '《秋千》': {
+                    primary: 'https://i.see.you/2026/05/26/M7le/swing.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Jean-Honor%C3%A9_Fragonard_-_The_Swing_-_Google_Art_Project.jpg/960px-Jean-Honor%C3%A9_Fragonard_-_The_Swing_-_Google_Art_Project.jpg',
+                    local: 'assets/images/originals/swing.jpg'
+                },
+                '《阿尔诺芬尼夫妇像》': {
+                    primary: 'https://i.see.you/2026/05/26/vBe9/arnolfini.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/The_Arnolfini_portrait_%281434%29.jpg/960px-The_Arnolfini_portrait_%281434%29.jpg',
+                    local: 'assets/images/originals/arnolfini.jpg'
+                },
+                '《加歇医生像》': {
+                    primary: 'https://i.see.you/2026/05/26/cp4T/dr_gachet.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Portrait_of_Dr._Gachet.jpg',
+                    local: 'assets/images/originals/dr_gachet.jpg'
+                },
+                '《船上的午宴》': {
+                    primary: 'https://i.see.you/2026/05/26/Aha4/boating_luncheon.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Luncheon_of_the_Boating_Party_Renoir_1881.jpg/960px-Luncheon_of_the_Boating_Party_Renoir_1881.jpg',
+                    local: 'assets/images/originals/boating_luncheon.jpg'
+                },
+                '《撑阳伞的女人》': {
+                    primary: 'https://i.see.you/2026/05/26/2mqM/woman_with_parasol.jpg',
+                    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_Google_Art_Project.jpg/960px-Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_Google_Art_Project.jpg',
+                    local: 'assets/images/originals/woman_with_parasol.jpg'
+                }
             };
-            var url = originalUrls[painting.title];
-            if (url) {
-                document.getElementById('originalPainting').src = url;
+            var imageSources = originalUrls[painting.title];
+            if (imageSources) {
+                var originalPainting = document.getElementById('originalPainting');
+                originalPainting.onerror = function() {
+                    if (originalPainting.dataset.source === 'primary') {
+                        originalPainting.dataset.source = 'fallback';
+                        originalPainting.src = imageSources.fallback;
+                    } else if (originalPainting.dataset.source === 'fallback') {
+                        originalPainting.dataset.source = 'local';
+                        originalPainting.src = imageSources.local;
+                    }
+                };
+                originalPainting.dataset.source = 'primary';
+                originalPainting.src = imageSources.primary;
                 document.getElementById('originalPaintingSection').style.display = 'block';
             } else {
                 document.getElementById('originalPaintingSection').style.display = 'none';
