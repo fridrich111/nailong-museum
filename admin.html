@@ -691,8 +691,7 @@
                 padding: 0.8rem 1rem;
             }
         }
-    
-        /* ===== Report Tab ===== */
+
         .report-summary {
             display: flex;
             gap: 1rem;
@@ -865,7 +864,6 @@
             color: var(--cream);
             margin-top: 0.3rem;
         }
-
     </style>
 </head>
 <body>
@@ -1025,7 +1023,6 @@
             </div>
         </div>
     </div>
-</div>
 
     <div class="tab-content" id="content-report">
         <h3 class="section-title">审核报告</h3>
@@ -1040,7 +1037,7 @@
             </div>
             <div class="summary-card">
                 <div class="val" id="report-excellent">0</div>
-                <div class="lbl">优质 (≥90)</div>
+                <div class="lbl">优质 (&ge;90)</div>
             </div>
             <div class="summary-card">
                 <div class="val" id="report-good">0</div>
@@ -1110,19 +1107,25 @@
     var currentFilter = 'all';
     var allSubmissions = [];
     var allPaintings = [];
+    var reportRowCounter = 0;
 
+    console.log('[Admin] IIFE starting...');
+
+    // ==================== Init Supabase ====================
     function initSupabase() {
         try {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('[Admin] Supabase init ok');
+            console.log('[Admin] Supabase init OK');
         } catch (err) {
-            console.error('[Admin] Supabase init fail:', err);
-            showStatus('数据库连接失败', 'error');
+            console.error('[Admin] Supabase init FAIL:', err);
+            showStatus('数据库连接失败，请刷新页面', 'error');
         }
     }
 
+    // ==================== Status Message ====================
     function showStatus(msg, type) {
         var el = document.getElementById('status-message');
+        if (!el) return;
         el.textContent = msg;
         el.className = type + ' show';
         clearTimeout(el._timeout);
@@ -1131,25 +1134,42 @@
         }, 3000);
     }
 
+    // ==================== Login ====================
     function handleLogin() {
-        var email = document.getElementById('login-email').value.trim();
-        var password = document.getElementById('login-password').value;
+        console.log('[Admin] handleLogin called');
+        var emailEl = document.getElementById('login-email');
+        var passwordEl = document.getElementById('login-password');
         var errorEl = document.getElementById('login-error');
         var btn = document.getElementById('login-submit');
+
+        if (!emailEl || !passwordEl || !btn) {
+            console.error('[Admin] Login elements not found!');
+            return;
+        }
+
+        var email = emailEl.value.trim();
+        var password = passwordEl.value;
 
         if (!email || !password) {
             errorEl.textContent = '请填写邮箱和密码';
             return;
         }
 
+        if (!supabase) {
+            errorEl.textContent = '系统初始化中，请刷新页面';
+            return;
+        }
+
         errorEl.textContent = '';
         btn.disabled = true;
         btn.textContent = '登录中...';
+        console.log('[Admin] Calling supabase.auth.signInWithPassword...');
 
         var timeoutId = setTimeout(function() {
             btn.disabled = false;
             btn.textContent = '登 录';
             errorEl.textContent = '登录超时，请检查网络后重试';
+            console.log('[Admin] Login timeout');
         }, 15000);
 
         supabase.auth.signInWithPassword({ email: email, password: password })
@@ -1157,9 +1177,11 @@
                 clearTimeout(timeoutId);
                 btn.disabled = false;
                 btn.textContent = '登 录';
+                console.log('[Admin] Login result received');
 
                 if (result.error) {
                     var msg = result.error.message || '';
+                    console.error('[Admin] Login error:', msg);
                     if (msg.indexOf('Invalid login credentials') !== -1) {
                         errorEl.textContent = '邮箱或密码错误';
                     } else if (msg.indexOf('Email not confirmed') !== -1) {
@@ -1174,6 +1196,8 @@
 
                 if (result.data && result.data.user) {
                     var userEmail = result.data.user.email;
+                    console.log('[Admin] User email:', userEmail);
+
                     if (ADMIN_EMAILS.length > 0 && ADMIN_EMAILS.indexOf(userEmail) === -1) {
                         errorEl.textContent = '该账号无管理员权限';
                         supabase.auth.signOut();
@@ -1184,6 +1208,7 @@
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
                     document.getElementById('admin-email-display').textContent = userEmail;
+                    console.log('[Admin] Login success, showing dashboard');
                     initDashboard();
                 }
             })
@@ -1191,7 +1216,7 @@
                 clearTimeout(timeoutId);
                 btn.disabled = false;
                 btn.textContent = '登 录';
-                console.error('[Admin] Login error:', err);
+                console.error('[Admin] Login catch:', err);
                 if (err.message && err.message.indexOf('fetch') !== -1) {
                     errorEl.textContent = '网络错误，请检查网络连接';
                 } else {
@@ -1200,7 +1225,36 @@
             });
     }
 
+    function initLogin() {
+        console.log('[Admin] initLogin binding...');
+        var loginBtn = document.getElementById('login-submit');
+        var loginPassword = document.getElementById('login-password');
+
+        if (loginBtn) {
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('[Admin] Login button clicked');
+                handleLogin();
+            });
+            console.log('[Admin] Login button click handler bound');
+        } else {
+            console.error('[Admin] Login button NOT FOUND!');
+        }
+
+        if (loginPassword) {
+            loginPassword.addEventListener('keydown', function(e) {
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    handleLogin();
+                }
+            });
+            console.log('[Admin] Password Enter key handler bound');
+        }
+    }
+
+    // ==================== Logout ====================
     function handleLogout() {
+        if (!supabase) return;
         supabase.auth.signOut().then(function() {
             currentUser = null;
             document.getElementById('login-screen').style.display = 'flex';
@@ -1208,16 +1262,21 @@
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('login-error').textContent = '';
+        }).catch(function(err) {
+            console.error('[Admin] Logout error:', err);
         });
     }
 
+    // ==================== Tabs ====================
     function switchTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
-            btn.classList.remove('active');
-        });
-        document.querySelectorAll('.tab-content').forEach(function(content) {
-            content.classList.remove('active');
-        });
+        var tabBtns = document.querySelectorAll('.tab-btn');
+        for (var i = 0; i < tabBtns.length; i++) {
+            tabBtns[i].classList.remove('active');
+        }
+        var tabContents = document.querySelectorAll('.tab-content');
+        for (var j = 0; j < tabContents.length; j++) {
+            tabContents[j].classList.remove('active');
+        }
 
         var tabBtn = document.getElementById('tab-' + tabName);
         var tabContent = document.getElementById('content-' + tabName);
@@ -1230,91 +1289,141 @@
         if (tabName === 'report') updateReportSummary();
     }
 
+    // ==================== Dashboard Init ====================
     function initDashboard() {
-        document.querySelectorAll('.tab-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        console.log('[Admin] initDashboard...');
+
+        var tabBtns = document.querySelectorAll('.tab-btn');
+        for (var i = 0; i < tabBtns.length; i++) {
+            tabBtns[i].addEventListener('click', function() {
                 switchTab(this.getAttribute('data-tab'));
             });
-        });
+        }
 
-        document.getElementById('btn-logout').addEventListener('click', handleLogout);
+        var logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', handleLogout);
+        }
 
-        document.getElementById('review-list').addEventListener('click', function(e) {
-            var btn = e.target.closest('.btn-approve, .btn-reject');
-            if (!btn) return;
-            var id = btn.getAttribute('data-id');
-            if (!id) return;
-            if (btn.classList.contains('btn-approve')) {
-                window._adminApprove(id);
-            } else if (btn.classList.contains('btn-reject')) {
-                window._adminReject(id);
-            }
-        });
+        // Event delegation for approve/reject
+        var reviewList = document.getElementById('review-list');
+        if (reviewList) {
+            reviewList.addEventListener('click', function(e) {
+                var btn = e.target.closest('.btn-approve, .btn-reject');
+                if (!btn) return;
+                var id = btn.getAttribute('data-id');
+                if (!id) return;
+                if (btn.classList.contains('btn-approve')) {
+                    window._adminApprove(id);
+                } else if (btn.classList.contains('btn-reject')) {
+                    window._adminReject(id);
+                }
+            });
+        }
 
-        document.querySelectorAll('#content-review .filter-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('#content-review .filter-btn').forEach(function(b) {
-                    b.classList.remove('active');
-                });
+        // Filter buttons
+        var filterBtns = document.querySelectorAll('#content-review .filter-btn');
+        for (var f = 0; f < filterBtns.length; f++) {
+            filterBtns[f].addEventListener('click', function() {
+                var allBtns = document.querySelectorAll('#content-review .filter-btn');
+                for (var b = 0; b < allBtns.length; b++) {
+                    allBtns[b].classList.remove('active');
+                }
                 this.classList.add('active');
                 currentFilter = this.getAttribute('data-filter');
                 renderReviewList();
             });
-        });
+        }
 
+        // Search with debounce
         var searchTimer = null;
-        document.getElementById('manage-search').addEventListener('input', function() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(renderManageTable, 300);
-        });
+        var searchInput = document.getElementById('manage-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(renderManageTable, 300);
+            });
+        }
 
-        document.getElementById('btn-refresh-manage').addEventListener('click', function() {
-            loadPaintings();
-        });
+        var refreshBtn = document.getElementById('btn-refresh-manage');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                loadPaintings();
+            });
+        }
 
-        document.getElementById('painting-image').addEventListener('input', function() {
-            var url = this.value.trim();
-            var preview = document.getElementById('painting-image-preview');
-            if (url) {
-                preview.src = url;
-                preview.style.display = 'block';
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-
-        document.getElementById('original-painting-upload').addEventListener('change', function() {
-            var file = this.files[0];
-            var preview = document.getElementById('original-painting-preview');
-            if (file) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
+        // Image preview
+        var paintingImage = document.getElementById('painting-image');
+        if (paintingImage) {
+            paintingImage.addEventListener('input', function() {
+                var url = this.value.trim();
+                var preview = document.getElementById('painting-image-preview');
+                if (url) {
+                    preview.src = url;
                     preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        });
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
 
-        document.getElementById('btn-publish').addEventListener('click', handlePublish);
+        // Original painting upload preview
+        var origUpload = document.getElementById('original-painting-upload');
+        if (origUpload) {
+            origUpload.addEventListener('change', function() {
+                var file = this.files[0];
+                var preview = document.getElementById('original-painting-preview');
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
 
-        document.getElementById('btn-add-report-row').addEventListener('click', addReportRow);
-        document.getElementById('btn-batch-publish').addEventListener('click', batchPublish);
+        // Publish button
+        var publishBtn = document.getElementById('btn-publish');
+        if (publishBtn) {
+            publishBtn.addEventListener('click', handlePublish);
+        }
 
-        document.getElementById('confirm-cancel').addEventListener('click', closeConfirmModal);
-        document.getElementById('confirm-ok').addEventListener('click', function() {
-            if (window._confirmCallback) {
-                window._confirmCallback();
-                window._confirmCallback = null;
-            }
-            closeConfirmModal();
-        });
+        // Report tab
+        var addRowBtn = document.getElementById('btn-add-report-row');
+        if (addRowBtn) {
+            addRowBtn.addEventListener('click', addReportRow);
+        }
+        var batchPublishBtn = document.getElementById('btn-batch-publish');
+        if (batchPublishBtn) {
+            batchPublishBtn.addEventListener('click', batchPublish);
+        }
 
+        // Confirm modal
+        var confirmCancel = document.getElementById('confirm-cancel');
+        if (confirmCancel) {
+            confirmCancel.addEventListener('click', closeConfirmModal);
+        }
+        var confirmOk = document.getElementById('confirm-ok');
+        if (confirmOk) {
+            confirmOk.addEventListener('click', function() {
+                if (window._confirmCallback) {
+                    window._confirmCallback();
+                    window._confirmCallback = null;
+                }
+                closeConfirmModal();
+            });
+        }
+
+        // Load initial data
         loadSubmissions();
+        console.log('[Admin] Dashboard initialized');
     }
 
+    // ==================== Confirm Modal ====================
     function showConfirm(title, message, callback) {
         document.getElementById('confirm-title').textContent = title;
         document.getElementById('confirm-message').textContent = message;
@@ -1326,8 +1435,11 @@
         document.getElementById('confirm-modal').classList.remove('show');
     }
 
+    // ==================== Submissions ====================
     function loadSubmissions() {
+        if (!supabase) return;
         var list = document.getElementById('review-list');
+        if (!list) return;
         list.innerHTML = '<div class="empty-state"><span class="loading-spinner"></span>加载中...</div>';
 
         supabase.from('submissions')
@@ -1346,21 +1458,27 @@
 
     function renderReviewList() {
         var list = document.getElementById('review-list');
-        var filtered = allSubmissions;
+        if (!list) return;
 
+        var filtered = allSubmissions;
         if (currentFilter !== 'all') {
             filtered = allSubmissions.filter(function(s) {
                 return s.status === currentFilter;
             });
         }
 
-        var pendingCount = allSubmissions.filter(function(s) { return s.status === 'pending'; }).length;
+        var pendingCount = 0;
+        for (var i = 0; i < allSubmissions.length; i++) {
+            if (allSubmissions[i].status === 'pending') pendingCount++;
+        }
         var badge = document.getElementById('review-badge');
-        if (pendingCount > 0) {
-            badge.textContent = pendingCount;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
+        if (badge) {
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         if (filtered.length === 0) {
@@ -1368,7 +1486,9 @@
             return;
         }
 
-        list.innerHTML = filtered.map(function(sub) {
+        var html = '';
+        for (var j = 0; j < filtered.length; j++) {
+            var sub = filtered[j];
             var statusLabel = '';
             var statusClass = '';
             if (sub.status === 'pending') {
@@ -1390,7 +1510,7 @@
 
             var createdAt = sub.created_at ? new Date(sub.created_at).toLocaleString('zh-CN') : '未知';
 
-            return '<div class="review-card">' +
+            html += '<div class="review-card">' +
                 '<img class="thumb" src="' + escapeHtml(sub.image_url) + '" alt="' + escapeHtml(sub.original_title || '') + '" onerror="this.style.display=\'none\'">' +
                 '<div class="info">' +
                     '<h4>' + escapeHtml(sub.original_title || '未命名') + '</h4>' +
@@ -1405,11 +1525,19 @@
                 '</div>' +
                 '<div class="actions">' + actionsHtml + '</div>' +
             '</div>';
-        }).join('');
+        }
+        list.innerHTML = html;
     }
 
+    // Approve - fill add form and switch to add tab
     window._adminApprove = function(id) {
-        var sub = allSubmissions.find(function(s) { return String(s.id) == String(id); });
+        var sub = null;
+        for (var i = 0; i < allSubmissions.length; i++) {
+            if (String(allSubmissions[i].id) == String(id)) {
+                sub = allSubmissions[i];
+                break;
+            }
+        }
         if (!sub) { console.log('[Admin] Approve: not found for id=' + id); return; }
 
         document.getElementById('painting-image').value = sub.image_url || '';
@@ -1431,15 +1559,18 @@
         } else {
             preview.style.display = 'none';
         }
-        document.getElementById('original-painting-preview').style.display = 'none';
+        var origPreview = document.getElementById('original-painting-preview');
+        if (origPreview) origPreview.style.display = 'none';
 
         window._currentApproveId = id;
         switchTab('add');
         showStatus('已加载投稿信息，请填写剩余字段后发布', 'info');
     };
 
+    // Reject
     window._adminReject = function(id) {
         showConfirm('确认拒绝', '确定要拒绝此投稿吗？', function() {
+            if (!supabase) return;
             supabase.from('submissions')
                 .update({ status: 'rejected' })
                 .eq('id', id)
@@ -1448,16 +1579,23 @@
                         showStatus('操作失败: ' + result.error.message, 'error');
                         return;
                     }
-                    var sub = allSubmissions.find(function(s) { return String(s.id) == String(id); });
-                    if (sub) sub.status = 'rejected';
+                    for (var i = 0; i < allSubmissions.length; i++) {
+                        if (String(allSubmissions[i].id) == String(id)) {
+                            allSubmissions[i].status = 'rejected';
+                            break;
+                        }
+                    }
                     renderReviewList();
                     showStatus('已拒绝该投稿', 'success');
                 });
         });
     };
 
+    // ==================== Paintings Management ====================
     function loadPaintings() {
+        if (!supabase) return;
         var tbody = document.getElementById('manage-table-body');
+        if (!tbody) return;
         tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><span class="loading-spinner"></span>加载中...</td></tr>';
 
         supabase.from('paintings')
@@ -1476,13 +1614,15 @@
 
     function renderManageTable() {
         var tbody = document.getElementById('manage-table-body');
-        var searchTerm = document.getElementById('manage-search').value.trim().toLowerCase();
+        if (!tbody) return;
+        var searchTerm = document.getElementById('manage-search');
+        var term = searchTerm ? searchTerm.value.trim().toLowerCase() : '';
 
         var filtered = allPaintings;
-        if (searchTerm) {
+        if (term) {
             filtered = allPaintings.filter(function(p) {
-                return (p.title && p.title.toLowerCase().indexOf(searchTerm) !== -1) ||
-                       (p.artist && p.artist.toLowerCase().indexOf(searchTerm) !== -1);
+                return (p.title && p.title.toLowerCase().indexOf(term) !== -1) ||
+                       (p.artist && p.artist.toLowerCase().indexOf(term) !== -1);
             });
         }
 
@@ -1491,23 +1631,27 @@
             return;
         }
 
-        tbody.innerHTML = filtered.map(function(p) {
+        var html = '';
+        for (var i = 0; i < filtered.length; i++) {
+            var p = filtered[i];
             var statusLabel = p.status === 'active' ? '启用' : '停用';
             var statusClass = p.status === 'active' ? 'approved' : 'rejected';
 
-            return '<tr>' +
+            html += '<tr>' +
                 '<td><img class="painting-thumb" src="' + escapeHtml(p.image) + '" alt="" onerror="this.style.display=\'none\'"></td>' +
                 '<td>' + escapeHtml(p.title || '-') + '</td>' +
                 '<td>' + escapeHtml(p.artist || '-') + '</td>' +
                 '<td>' + escapeHtml(p.year || '-') + '</td>' +
                 '<td><span class="status-badge ' + statusClass + '">' + statusLabel + '</span></td>' +
-                '<td><button class="btn-delete" onclick="window._adminDeletePainting(' + p.id + ')">删除</button></td>' +
+                '<td><button class="btn-delete" onclick="window._adminDeletePainting(\'' + p.id + '\')">删除</button></td>' +
             '</tr>';
-        }).join('');
+        }
+        tbody.innerHTML = html;
     }
 
     window._adminDeletePainting = function(id) {
         showConfirm('确认删除', '确定要删除这道题目吗？', function() {
+            if (!supabase) return;
             supabase.from('paintings')
                 .delete()
                 .eq('id', id)
@@ -1523,7 +1667,9 @@
         });
     };
 
+    // ==================== Publish ====================
     function handlePublish() {
+        if (!supabase) return;
         var title = document.getElementById('painting-title').value.trim();
         var artist = document.getElementById('painting-artist').value.trim();
         var image = document.getElementById('painting-image').value.trim();
@@ -1591,12 +1737,17 @@
                             .update({ status: 'approved' })
                             .eq('id', window._currentApproveId)
                             .then(function() {
-                                var sub = allSubmissions.find(function(s) { return String(s.id) == String(window._currentApproveId); });
-                                if (sub) sub.status = 'approved';
+                                for (var k = 0; k < allSubmissions.length; k++) {
+                                    if (String(allSubmissions[k].id) == String(window._currentApproveId)) {
+                                        allSubmissions[k].status = 'approved';
+                                        break;
+                                    }
+                                }
                                 window._currentApproveId = null;
                             });
                     }
 
+                    // Clear form
                     document.getElementById('painting-image').value = '';
                     document.getElementById('painting-title').value = '';
                     document.getElementById('painting-artist').value = '';
@@ -1627,7 +1778,6 @@
                         doInsert('');
                         return;
                     }
-
                     var publicUrl = supabase.storage.from('paintings')
                         .getPublicUrl('original/' + fileName);
                     var finalUrl = publicUrl.data ? publicUrl.data.publicUrl : '';
@@ -1639,7 +1789,9 @@
         }
     }
 
+    // ==================== Stats ====================
     function loadStats() {
+        if (!supabase) return;
         Promise.all([
             supabase.from('paintings').select('id', { count: 'exact', head: true }),
             supabase.from('submissions').select('id', { count: 'exact', head: true }),
@@ -1665,6 +1817,7 @@
         });
     }
 
+    // ==================== Escape HTML ====================
     function escapeHtml(str) {
         if (!str) return '';
         return String(str)
@@ -1675,19 +1828,12 @@
             .replace(/'/g, '&#039;');
     }
 
-    function initLogin() {
-        document.getElementById('login-submit').addEventListener('click', handleLogin);
-        document.getElementById('login-password').addEventListener('keydown', function(e) {
-            if (e.keyCode === 13) handleLogin();
-        });
-    }
-
-    var reportRowCounter = 0;
-
+    // ==================== Report Tab ====================
     function addReportRow() {
         reportRowCounter++;
         var rowId = 'report-row-' + reportRowCounter;
         var tbody = document.getElementById('report-table-body');
+        if (!tbody) return;
 
         var emptyRow = tbody.querySelector('.empty-state');
         if (emptyRow) {
@@ -1723,11 +1869,13 @@
     window._reportPreviewImage = function(input, rowNum) {
         var url = input.value.trim();
         var img = document.getElementById('report-thumb-' + rowNum);
-        if (url) {
-            img.src = url;
-            img.style.display = 'block';
-        } else {
-            img.style.display = 'none';
+        if (img) {
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
         }
     };
 
@@ -1751,16 +1899,18 @@
         var excellent = 0;
         var good = 0;
 
-        rows.forEach(function(row) {
-            var scoreInput = row.querySelector('[name="quality-score"]');
-            var score = parseInt(scoreInput.value, 10);
-            if (!isNaN(score)) {
-                sumScore += score;
-                scoreCount++;
-                if (score >= 90) excellent++;
-                else if (score >= 70) good++;
+        for (var i = 0; i < rows.length; i++) {
+            var scoreInput = rows[i].querySelector('[name="quality-score"]');
+            if (scoreInput) {
+                var score = parseInt(scoreInput.value, 10);
+                if (!isNaN(score)) {
+                    sumScore += score;
+                    scoreCount++;
+                    if (score >= 90) excellent++;
+                    else if (score >= 70) good++;
+                }
             }
-        });
+        }
 
         var totalEl = document.getElementById('report-total');
         var avgEl = document.getElementById('report-avg-score');
@@ -1782,7 +1932,8 @@
     function collectReportData() {
         var rows = document.querySelectorAll('#report-table-body .report-row');
         var data = [];
-        rows.forEach(function(row) {
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
             var getVal = function(name) {
                 var el = row.querySelector('[name="' + name + '"]');
                 return el ? el.value.trim() : '';
@@ -1803,11 +1954,12 @@
                 submissionId: getVal('submission-id')
             };
             data.push(item);
-        });
+        }
         return data;
     }
 
     function batchPublish() {
+        if (!supabase) return;
         var items = collectReportData();
         if (items.length === 0) {
             showStatus('审核报告中没有待发布题目', 'error');
@@ -1847,7 +1999,8 @@
                 btn.disabled = false;
                 updateProgress(items.length, items.length);
                 showStatus('批量发布完成！共发布 ' + items.length + ' 道题目', 'success');
-                document.getElementById('report-table-body').innerHTML = '<tr><td colspan="12" class="empty-state">点击"+ 添加新行"开始</td></tr>';
+                var tbody = document.getElementById('report-table-body');
+                if (tbody) tbody.innerHTML = '<tr><td colspan="12" class="empty-state">点击"+ 添加新行"开始</td></tr>';
                 return;
             }
 
@@ -1887,8 +2040,12 @@
                             .update({ status: 'approved' })
                             .eq('id', it.submissionId)
                             .then(function() {
-                                var sub = allSubmissions.find(function(s) { return String(s.id) == String(it.submissionId); });
-                                if (sub) sub.status = 'approved';
+                                for (var k = 0; k < allSubmissions.length; k++) {
+                                    if (String(allSubmissions[k].id) == String(it.submissionId)) {
+                                        allSubmissions[k].status = 'approved';
+                                        break;
+                                    }
+                                }
                             });
                     }
 
@@ -1905,27 +2062,44 @@
         publishNext();
     }
 
+    // ==================== Session Restore ====================
     function restoreSession() {
-        function restoreSession() {
+        console.log('[Admin] restoreSession...');
+        if (!supabase) {
+            console.error('[Admin] restoreSession: supabase is null');
+            return;
+        }
         supabase.auth.getSession().then(function(result) {
+            console.log('[Admin] getSession result:', result.data ? 'has data' : 'no data');
             if (result.data && result.data.session) {
                 var user = result.data.session.user;
+                console.log('[Admin] Found session for:', user.email);
                 if (ADMIN_EMAILS.length === 0 || ADMIN_EMAILS.indexOf(user.email) !== -1) {
                     currentUser = user;
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
                     document.getElementById('admin-email-display').textContent = user.email;
                     initDashboard();
+                    console.log('[Admin] Session restored, dashboard shown');
+                } else {
+                    console.log('[Admin] User not in admin list:', user.email);
                 }
+            } else {
+                console.log('[Admin] No active session, showing login');
             }
         }).catch(function(err) {
             console.error('[Admin] Session restore error:', err);
         });
     }
 
+    // ==================== STARTUP ====================
+    console.log('[Admin] Starting initialization...');
     initSupabase();
+    console.log('[Admin] After initSupabase, supabase is:', supabase ? 'ready' : 'NULL');
     initLogin();
+    console.log('[Admin] After initLogin');
     restoreSession();
+    console.log('[Admin] Startup complete');
 
 })();
 </script>
