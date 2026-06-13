@@ -1,9 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <!-- 预加载关键资源 -->
     <link rel="preload" href="assets/images/starry-nailong-bg.jpg" as="image" type="image/jpeg">
-    <link rel="preload" href="css/style.min.css" as="style">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>奶龙美术馆 - fridrich-of-ntu</title>
@@ -11,7 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="css/style.min.css">
+    <!-- 模块化 CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/pages/home.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
@@ -22,14 +25,12 @@
     
     <!-- 移动端优化 -->
     <style>
-        /* 移动端使用压缩背景 */
         @media (max-width: 768px) {
             .museum-bg {
                 background-image: url('assets/images/starry-night-bg.jpg');
                 opacity: 0.2;
             }
         }
-        /* 减少动画性能消耗 */
         @media (max-width: 768px) {
             * {
                 animation-duration: 0.01ms !important;
@@ -38,7 +39,6 @@
             }
         }
     </style>
-    
 </head>
 <body class="home-page">
     <div class="museum-bg"></div>
@@ -69,7 +69,6 @@
 
     <!-- 背景音乐 -->
     <audio id="bgMusic" loop preload="none">
-        <!-- 使用免费的舒缓音乐CDN -->
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
     </audio>
 
@@ -126,7 +125,6 @@
         </div>
     </div>
 
-
     <!-- 投稿弹窗 -->
     <div id="submission-modal" class="submission-modal">
         <div class="submission-modal-content">
@@ -165,8 +163,7 @@
         </div>
     </div>
 
-
-<main class="container">
+    <main class="container">
         <div class="hero-section">
             <div class="nailong-container">
                 <img src="assets/images/thinking-nailong.jpg" alt="沉思的奶龙" class="nailong-img" loading="lazy" decoding="async" width="300" height="300" style="max-width:100%;height:auto;">
@@ -191,253 +188,9 @@
         </div>
     </main>
 
-    <script>
-        // 自动播放背景音乐（音量较小）
-        // 检测是否为移动设备
-        var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        window.addEventListener('load', function() {
-            // 移动端不自动播放音频
-            if (isMobile) {
-                console.log('移动设备 detected，跳过音频自动加载');
-                return;
-            }
-            const bgMusic = document.getElementById('bgMusic');
-            bgMusic.volume = 0.15; // 设置音量为15%
-
-            // 尝试自动播放
-            const playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // 自动播放被阻止，等待用户交互
-                    console.log('自动播放被阻止，等待用户交互');
-                });
-            }
-        });
-
-        // 音乐开关
-        function toggleAudio() {
-            const bgMusic = document.getElementById('bgMusic');
-            const audioControl = document.getElementById('audioControl');
-
-            if (bgMusic.paused) {
-                bgMusic.play();
-                audioControl.textContent = '🎵';
-                audioControl.classList.remove('muted');
-            } else {
-                bgMusic.pause();
-                audioControl.textContent = '🔇';
-                audioControl.classList.add('muted');
-            }
-        }
-
-        // 全屏切换
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log('全屏模式被拒绝:', err);
-                });
-                localStorage.setItem('wasFullscreen', 'true');
-            } else {
-                document.exitFullscreen();
-                localStorage.removeItem('wasFullscreen');
-            }
-        }
-
-        // 页面加载时恢复全屏状态
-        if (localStorage.getItem('wasFullscreen') === 'true') {
-            document.addEventListener('click', function restoreFS() {
-                document.documentElement.requestFullscreen().catch(() => {});
-                localStorage.removeItem('wasFullscreen');
-                document.removeEventListener('click', restoreFS);
-            }, { once: true });
-        }
-
-        
-        // 声明弹窗逻辑 - 每次访问都弹出
-        (function() {
-            var modal = document.getElementById('disclaimer-modal');
-            var agreeBtn = document.getElementById('disclaimer-agree');
-            // 每次访问都显示声明弹窗
-            agreeBtn.addEventListener('click', function() {
-                modal.classList.add('hidden');
-            });
-        })();
-        // 开始答题
-        function startQuiz() {
-            localStorage.setItem('currentQuestion', '0');
-            localStorage.setItem('score', '0');
-            window.location.href = 'select-quiz.html';
-        }
-
-        // 投稿功能
-        var selectedFile = null;
-
-        function openSubmissionPage() {
-            var user = null;
-            if (typeof authManager !== 'undefined') {
-                user = authManager.currentUser;
-            }
-            if (!user) {
-                if (typeof authManager !== 'undefined') {
-                    authManager.showModal();
-                }
-                return;
-            }
-            document.getElementById('submission-modal').style.display = 'flex';
-        }
-
-        function closeSubmissionModal() {
-            document.getElementById('submission-modal').style.display = 'none';
-        }
-
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            var file = e.target.files[0];
-            if (!file) return;
-            if (!file.type.startsWith('image/')) {
-                showSubmitMsg('请上传图片文件', 'error');
-                return;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                showSubmitMsg('图片大小不能超过5MB', 'error');
-                return;
-            }
-            selectedFile = file;
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                document.getElementById('previewImage').src = ev.target.result;
-                document.getElementById('previewImage').style.display = 'block';
-                document.getElementById('uploadPlaceholder').style.display = 'none';
-                document.getElementById('removeImage').style.display = 'block';
-                validateSubmitForm();
-            };
-            reader.readAsDataURL(file);
-        });
-
-        function clearImage() {
-            selectedFile = null;
-            document.getElementById('imageInput').value = '';
-            document.getElementById('previewImage').style.display = 'none';
-            document.getElementById('uploadPlaceholder').style.display = 'block';
-            document.getElementById('removeImage').style.display = 'none';
-            validateSubmitForm();
-        }
-
-        function validateSubmitForm() {
-            var hasImage = !!selectedFile;
-            var hasTitle = document.getElementById('originalTitle').value.trim() !== '';
-            document.getElementById('submitArtworkBtn').disabled = !(hasImage && hasTitle);
-        }
-
-        document.getElementById('originalTitle').addEventListener('input', validateSubmitForm);
-
-        function submitArtwork() {
-            var btn = document.getElementById('submitArtworkBtn');
-            btn.disabled = true;
-            btn.textContent = '上传中...';
-
-            var user = authManager.currentUser;
-            if (!user) {
-                showSubmitMsg('请先登录', 'error');
-                btn.disabled = false;
-                btn.textContent = '提交投稿';
-                return;
-            }
-
-            var title = document.getElementById('originalTitle').value.trim();
-            var artist = document.getElementById('originalArtist').value.trim();
-
-            if (!selectedFile) {
-                showSubmitMsg('请选择图片', 'error');
-                btn.disabled = false;
-                btn.textContent = '提交投稿';
-                return;
-            }
-            if (!title) {
-                showSubmitMsg('请填写原画名称', 'error');
-                btn.disabled = false;
-                btn.textContent = '提交投稿';
-                return;
-            }
-
-            var fileExt = selectedFile.name.split('.').pop();
-            var fileName = Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '.' + fileExt;
-            var filePath = 'nailong/' + fileName;
-
-            // 设置超时
-            var timeoutId = setTimeout(function() {
-                showSubmitMsg('上传超时，请重试', 'error');
-                btn.disabled = false;
-                btn.textContent = '提交投稿';
-            }, 30000);
-
-            // 上传图片
-            supabaseClient.storage.from('paintings').upload(filePath, selectedFile).then(function(uploadResult) {
-                if (uploadResult.error) {
-                    clearTimeout(timeoutId);
-                    console.error('Storage upload error:', uploadResult.error);
-                    showSubmitMsg('图片上传失败: ' + (uploadResult.error.message || '请检查Storage配置'), 'error');
-                    btn.disabled = false;
-                    btn.textContent = '提交投稿';
-                    return;
-                }
-
-                // 获取公开URL
-                var urlResult = supabaseClient.storage.from('paintings').getPublicUrl(filePath);
-                if (!urlResult.data || !urlResult.data.publicUrl) {
-                    clearTimeout(timeoutId);
-                    showSubmitMsg('获取图片URL失败', 'error');
-                    btn.disabled = false;
-                    btn.textContent = '提交投稿';
-                    return;
-                }
-
-                var publicUrl = urlResult.data.publicUrl;
-
-                // 保存到数据库
-                return supabaseClient.from('submissions').insert({
-                    user_id: user.id,
-                    image_url: publicUrl,
-                    original_title: title,
-                    original_artist: artist || null,
-                    status: 'pending'
-                });
-            }).then(function(dbResult) {
-                clearTimeout(timeoutId);
-                if (dbResult && dbResult.error) {
-                    console.error('DB insert error:', dbResult.error);
-                    showSubmitMsg('保存投稿记录失败: ' + (dbResult.error.message || '请检查数据库配置'), 'error');
-                    btn.disabled = false;
-                    btn.textContent = '提交投稿';
-                    return;
-                }
-
-                showSubmitMsg('投稿成功！等待审核中...', 'success');
-                selectedFile = null;
-                document.getElementById('originalTitle').value = '';
-                document.getElementById('originalArtist').value = '';
-                document.getElementById('submitterName').value = '';
-                clearImage();
-
-                setTimeout(closeSubmissionModal, 2000);
-            }).catch(function(error) {
-                clearTimeout(timeoutId);
-                console.error('投稿失败:', error);
-                showSubmitMsg('投稿失败: ' + (error.message || '请重试'), 'error');
-                btn.disabled = false;
-                btn.textContent = '提交投稿';
-            });
-        }
-
-        function showSubmitMsg(text, type) {
-            var el = document.getElementById('submitMessage');
-            el.textContent = text;
-            el.className = 'submit-message ' + type;
-            setTimeout(function() {
-                el.textContent = '';
-                el.className = 'submit-message';
-            }, 5000);
-        }
-    </script>
+    <!-- 外置 JavaScript 文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/disclaimer.js"></script>
+    <script src="js/submission.js"></script>
 </body>
 </html>

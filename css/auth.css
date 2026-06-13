@@ -1,0 +1,150 @@
+/* ===== 登录系统 ===== */
+.auth-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(201, 162, 39, 0.2);
+    border: 1px solid var(--antique-gold);
+    border-radius: 20px;
+    color: var(--antique-gold);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+.auth-btn:hover {
+    background: rgba(201, 162, 39, 0.4);
+    transform: scale(1.05);
+}
+
+.username-display {
+    color: var(--antique-gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* ===== 登录弹窗 ===== */
+.auth-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.auth-modal.show { display: flex; }
+
+.auth-modal-content {
+    background: var(--deep-indigo);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--antique-gold);
+    max-width: 380px;
+    width: 90%;
+    position: relative;
+}
+
+.auth-close {
+    position: absolute;
+    top: 10px; right: 15px;
+    background: none;
+    border: none;
+    color: var(--antique-gold);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.auth-form h3 {
+    color: var(--antique-gold);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--antique-gold);
+    border-radius: 10px;
+    background: rgba(26, 26, 46, 0.5);
+    color: var(--cream);
+    font-size: 0.95rem;
+}
+.auth-form input::placeholder { color: rgba(245, 245, 220, 0.5); }
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+    border: none;
+    border-radius: 10px;
+    color: var(--deep-indigo);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3);
+}
+
+.auth-error, .auth-success {
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 1.2rem;
+    font-size: 0.9rem;
+}
+.auth-error { color: #FFB6C1; }
+.auth-success { color: #90EE90; }
+
+.auth-form .divider {
+    text-align: center;
+    margin: 1rem 0;
+    color: rgba(245, 245, 220, 0.5);
+    position: relative;
+}
+.auth-form .divider::before,
+.auth-form .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%; height: 1px;
+    background: rgba(201, 162, 39, 0.3);
+}
+.auth-form .divider::before { left: 0; }
+.auth-form .divider::after { right: 0; }
+
+.wechat-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: #07C160;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1rem;
+    color: rgba(245, 245, 220, 0.8);
+    font-size: 0.9rem;
+}
+.auth-switch a {
+    color: var(--antique-gold);
+    text-decoration: none;
+    font-weight: 600;
+}

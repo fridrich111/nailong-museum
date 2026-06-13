@@ -1,0 +1,177 @@
+/* ===== 带标签的按钮容器 ===== */
+.btn-with-label {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    z-index: 1000;
+}
+.btn-with-label .btn-label {
+    font-size: 0.7rem;
+    color: var(--antique-gold);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+/* 按钮定位 */
+.fullscreen-label-wrapper { top: 20px; right: 20px; }
+.audio-label-wrapper { bottom: 20px; right: 20px; }
+.answer-card-label-wrapper { bottom: 20px; left: 20px; }
+.submit-label-wrapper { bottom: 20px; left: 20px; }
+
+/* ===== 通用按钮样式 ===== */
+.fullscreen-btn, .audio-control, .answer-card-btn, .submit-corner-btn {
+    width: 50px; height: 50px;
+    background: rgba(201, 162, 39, 0.2);
+    border: 2px solid var(--antique-gold);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--antique-gold);
+    transition: all 0.3s ease;
+}
+.fullscreen-btn:hover, .audio-control:hover, .answer-card-btn:hover, .submit-corner-btn:hover {
+    background: rgba(201, 162, 39, 0.4);
+    transform: scale(1.1);
+}
+.fullscreen-btn { font-size: 1.5rem; }
+.audio-control.muted { opacity: 0.5; }
+
+/* ===== 弹窗通用样式 ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal-content {
+    background: var(--deep-indigo);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--antique-gold);
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px; right: 15px;
+    background: none;
+    border: none;
+    color: var(--antique-gold);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal-title {
+    color: var(--antique-gold);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+/* ===== 表单通用样式 ===== */
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: var(--antique-gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--antique-gold);
+    border-radius: 10px;
+    background: rgba(26, 26, 46, 0.5);
+    color: var(--cream);
+    font-size: 0.95rem;
+}
+.form-group input::placeholder {
+    color: rgba(245, 245, 220, 0.4);
+}
+
+/* ===== 主按钮样式 ===== */
+.primary-btn {
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    color: var(--deep-indigo);
+    background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3), 0 0 30px rgba(201, 162, 39, 0.2);
+}
+.primary-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 217, 61, 0.4), 0 0 50px rgba(201, 162, 39, 0.3);
+}
+
+.secondary-btn {
+    padding: 0.8rem 2rem;
+    background: transparent;
+    border: 1px solid var(--antique-gold);
+    border-radius: 25px;
+    color: var(--antique-gold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.secondary-btn:hover {
+    background: var(--antique-gold);
+    color: var(--deep-indigo);
+}
+
+/* ===== 答题卡弹窗 ===== */
+.answer-card-modal { display: none; }
+.answer-card-content {
+    background: var(--deep-indigo);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid var(--antique-gold);
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+}
+.answer-card-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+.answer-card-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(201, 162, 39, 0.1);
+    border: 2px solid var(--antique-gold);
+    border-radius: 10px;
+    color: var(--cream);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+.answer-card-cell:hover { background: rgba(201, 162, 39, 0.3); transform: scale(1.1); }
+.answer-card-cell.current { background: var(--nailong-yellow); color: var(--deep-indigo); border-color: var(--nailong-yellow); font-weight: 700; }
+.answer-card-cell.answered { background: rgba(0, 200, 0, 0.2); border-color: #90EE90; }

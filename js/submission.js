@@ -1,196 +1,179 @@
-// 投稿功能
-class SubmissionManager {
-  constructor() {
-    this.selectedFile = null;
-    this.init();
-  }
+// submission.js - 投稿功能逻辑
 
-  init() {
-    // 上传区域点击
-    document.getElementById('uploadArea').addEventListener('click', () => {
-      document.getElementById('imageInput').click();
-    });
+var selectedFile = null;
 
-    // 文件选择
-    document.getElementById('imageInput').addEventListener('change', (e) => {
-      this.handleFileSelect(e.target.files[0]);
-    });
-
-    // 删除图片
-    document.getElementById('removeImage').addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.clearImage();
-    });
-
-    // 提交按钮
-    document.getElementById('submitBtn').addEventListener('click', () => {
-      this.handleSubmit();
-    });
-
-    // 表单输入监听（验证）
-    ['originalTitle', 'originalArtist'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        this.validateForm();
-      });
-    });
-  }
-
-  handleFileSelect(file) {
-    if (!file) return;
-    
-    if (!file.type.startsWith('image/')) {
-      this.showMessage('请上传图片文件', 'error');
-      return;
+function openSubmissionPage() {
+    var user = null;
+    if (typeof authManager !== 'undefined') {
+        user = authManager.currentUser;
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      this.showMessage('图片大小不能超过5MB', 'error');
-      return;
+    if (!user) {
+        if (typeof authManager !== 'undefined') {
+            authManager.showModal();
+        }
+        return;
     }
+    document.getElementById('submission-modal').style.display = 'flex';
+}
 
-    this.selectedFile = file;
+function closeSubmissionModal() {
+    document.getElementById('submission-modal').style.display = 'none';
+}
+
+// 文件选择处理
+document.addEventListener('DOMContentLoaded', function() {
+    var imageInput = document.getElementById('imageInput');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showSubmitMsg('请上传图片文件', 'error');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showSubmitMsg('图片大小不能超过5MB', 'error');
+                return;
+            }
+            selectedFile = file;
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('previewImage').src = ev.target.result;
+                document.getElementById('previewImage').style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+                document.getElementById('removeImage').style.display = 'block';
+                validateSubmitForm();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
     
-    // 显示预览
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      document.getElementById('previewImage').src = e.target.result;
-      document.getElementById('previewImage').style.display = 'block';
-      document.getElementById('uploadPlaceholder').style.display = 'none';
-      document.getElementById('removeImage').style.display = 'block';
-      this.validateForm();
-    };
-    reader.readAsDataURL(file);
-  }
+    // 表单输入验证
+    var originalTitle = document.getElementById('originalTitle');
+    if (originalTitle) {
+        originalTitle.addEventListener('input', validateSubmitForm);
+    }
+});
 
-  clearImage() {
-    this.selectedFile = null;
+function clearImage() {
+    selectedFile = null;
     document.getElementById('imageInput').value = '';
     document.getElementById('previewImage').style.display = 'none';
     document.getElementById('uploadPlaceholder').style.display = 'block';
     document.getElementById('removeImage').style.display = 'none';
-    this.validateForm();
-  }
+    validateSubmitForm();
+}
 
-  validateForm() {
-    const hasImage = !!this.selectedFile;
-    const hasTitle = document.getElementById('originalTitle').value.trim() !== '';
-    document.getElementById('submitBtn').disabled = !(hasImage && hasTitle);
-  }
+function validateSubmitForm() {
+    var hasImage = !!selectedFile;
+    var hasTitle = document.getElementById('originalTitle').value.trim() !== '';
+    document.getElementById('submitArtworkBtn').disabled = !(hasImage && hasTitle);
+}
 
-  async handleSubmit() {
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = '上传中...';
+function submitArtwork() {
+    var btn = document.getElementById('submitArtworkBtn');
+    btn.disabled = true;
+    btn.textContent = '上传中...';
 
-    try {
-      const user = authManager.currentUser;
-      if (!user) {
-        throw new Error('请先登录');
-      }
+    var user = authManager.currentUser;
+    if (!user) {
+        showSubmitMsg('请先登录', 'error');
+        btn.disabled = false;
+        btn.textContent = '提交投稿';
+        return;
+    }
 
-      const title = document.getElementById('originalTitle').value.trim();
-      const artist = document.getElementById('originalArtist').value.trim();
+    var title = document.getElementById('originalTitle').value.trim();
+    var artist = document.getElementById('originalArtist').value.trim();
 
-      // 1. 上传图片到 Storage
-      const fileExt = this.selectedFile.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
+    if (!selectedFile) {
+        showSubmitMsg('请选择图片', 'error');
+        btn.disabled = false;
+        btn.textContent = '提交投稿';
+        return;
+    }
+    if (!title) {
+        showSubmitMsg('请填写原画名称', 'error');
+        btn.disabled = false;
+        btn.textContent = '提交投稿';
+        return;
+    }
 
-      const { data: uploadData, error: uploadError } = await supabaseClient
-        .storage
-        .from('submissions')
-        .upload(filePath, this.selectedFile);
+    var fileExt = selectedFile.name.split('.').pop();
+    var fileName = Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '.' + fileExt;
+    var filePath = 'nailong/' + fileName;
 
-      if (uploadError) throw uploadError;
+    // 设置超时
+    var timeoutId = setTimeout(function() {
+        showSubmitMsg('上传超时，请重试', 'error');
+        btn.disabled = false;
+        btn.textContent = '提交投稿';
+    }, 30000);
 
-      // 2. 获取图片公开 URL
-      const { data: urlData } = supabaseClient
-        .storage
-        .from('submissions')
-        .getPublicUrl(filePath);
+    // 上传图片
+    supabaseClient.storage.from('paintings').upload(filePath, selectedFile).then(function(uploadResult) {
+        if (uploadResult.error) {
+            clearTimeout(timeoutId);
+            console.error('Storage upload error:', uploadResult.error);
+            showSubmitMsg('图片上传失败: ' + (uploadResult.error.message || '请检查Storage配置'), 'error');
+            btn.disabled = false;
+            btn.textContent = '提交投稿';
+            return;
+        }
 
-      // 3. 保存投稿信息到数据库
-      const { error: dbError } = await supabaseClient
-        .from('submissions')
-        .insert({
-          user_id: user.id,
-          image_url: urlData.publicUrl,
-          original_title: title,
-          original_artist: artist || null,
-          status: 'pending'
+        // 获取公开URL
+        var urlResult = supabaseClient.storage.from('paintings').getPublicUrl(filePath);
+        if (!urlResult.data || !urlResult.data.publicUrl) {
+            clearTimeout(timeoutId);
+            showSubmitMsg('获取图片URL失败', 'error');
+            btn.disabled = false;
+            btn.textContent = '提交投稿';
+            return;
+        }
+
+        var publicUrl = urlResult.data.publicUrl;
+
+        // 保存到数据库
+        return supabaseClient.from('submissions').insert({
+            user_id: user.id,
+            image_url: publicUrl,
+            original_title: title,
+            original_artist: artist || null,
+            status: 'pending'
         });
+    }).then(function(dbResult) {
+        clearTimeout(timeoutId);
+        if (dbResult && dbResult.error) {
+            console.error('DB insert error:', dbResult.error);
+            showSubmitMsg('保存投稿记录失败: ' + (dbResult.error.message || '请检查数据库配置'), 'error');
+            btn.disabled = false;
+            btn.textContent = '提交投稿';
+            return;
+        }
 
-      if (dbError) throw dbError;
+        showSubmitMsg('投稿成功！等待审核中...', 'success');
+        selectedFile = null;
+        document.getElementById('originalTitle').value = '';
+        document.getElementById('originalArtist').value = '';
+        document.getElementById('submitterName').value = '';
+        clearImage();
 
-      // 4. 成功提示
-      this.showMessage('投稿成功！等待审核中...', 'success');
-      this.clearForm();
-      loadMySubmissions(); // 刷新列表
+        setTimeout(closeSubmissionModal, 2000);
+    }).catch(function(error) {
+        clearTimeout(timeoutId);
+        console.error('投稿失败:', error);
+        showSubmitMsg('投稿失败: ' + (error.message || '请重试'), 'error');
+        btn.disabled = false;
+        btn.textContent = '提交投稿';
+    });
+}
 
-    } catch (error) {
-      console.error('投稿失败:', error);
-      this.showMessage('投稿失败: ' + error.message, 'error');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '提交投稿';
-    }
-  }
-
-  clearForm() {
-    this.clearImage();
-    document.getElementById('originalTitle').value = '';
-    document.getElementById('originalArtist').value = '';
-  }
-
-  showMessage(text, type) {
-    const msgEl = document.getElementById('submitMessage');
-    msgEl.textContent = text;
-    msgEl.className = 'submit-message ' + type;
-    setTimeout(() => {
-      msgEl.textContent = '';
-      msgEl.className = 'submit-message';
+function showSubmitMsg(text, type) {
+    var el = document.getElementById('submitMessage');
+    el.textContent = text;
+    el.className = 'submit-message ' + type;
+    setTimeout(function() {
+        el.textContent = '';
+        el.className = 'submit-message';
     }, 5000);
-  }
 }
-
-// 加载用户的投稿列表
-async function loadMySubmissions() {
-  const user = authManager.currentUser;
-  if (!user) return;
-
-  const listEl = document.getElementById('submissionsList');
-  listEl.innerHTML = '<p class="loading-text">加载中...</p>';
-
-  try {
-    const { data, error } = await supabaseClient
-      .from('submissions')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      listEl.innerHTML = '<p class="empty-text">暂无投稿</p>';
-      return;
-    }
-
-    listEl.innerHTML = data.map(sub => `
-      <div class="submission-item">
-        <img src="${sub.image_url}" alt="投稿图片">
-        <div class="submission-info">
-          <p class="submission-title">${sub.original_title}</p>
-          ${sub.original_artist ? `<p class="submission-artist">${sub.original_artist}</p>` : ''}
-          <span class="submission-status ${sub.status}">${sub.status === 'pending' ? '审核中' : sub.status === 'approved' ? '已通过' : '已拒绝'}</span>
-        </div>
-      </div>
-    `).join('');
-
-  } catch (error) {
-    console.error('加载投稿失败:', error);
-    listEl.innerHTML = '<p class="error-text">加载失败</p>';
-  }
-}
-
-// 初始化
-const submissionManager = new SubmissionManager();
