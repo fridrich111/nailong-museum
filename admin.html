@@ -691,6 +691,181 @@
                 padding: 0.8rem 1rem;
             }
         }
+    
+        /* ===== Report Tab ===== */
+        .report-summary {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .report-summary .summary-card {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(201, 162, 39, 0.25);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            min-width: 140px;
+            text-align: center;
+        }
+        .report-summary .summary-card .val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--nailong-yellow);
+        }
+        .report-summary .summary-card .lbl {
+            font-size: 0.8rem;
+            color: rgba(245, 245, 220, 0.6);
+            margin-top: 0.2rem;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .report-table th {
+            text-align: left;
+            padding: 0.7rem 0.5rem;
+            color: var(--antique-gold);
+            border-bottom: 2px solid rgba(201, 162, 39, 0.3);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .report-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+            vertical-align: top;
+        }
+        .report-table .report-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+        .report-table input[type="text"],
+        .report-table input[type="number"] {
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 6px;
+            background: rgba(26, 26, 46, 0.6);
+            color: var(--cream);
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        .report-table input:focus {
+            outline: none;
+            border-color: var(--nailong-yellow);
+        }
+        .report-table textarea {
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 6px;
+            background: rgba(26, 26, 46, 0.6);
+            color: var(--cream);
+            font-size: 0.8rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .report-table textarea:focus {
+            outline: none;
+            border-color: var(--nailong-yellow);
+        }
+        .quality-score {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+        .quality-score.excellent {
+            background: rgba(81, 207, 102, 0.2);
+            color: var(--success);
+        }
+        .quality-score.good {
+            background: rgba(255, 212, 59, 0.2);
+            color: var(--warning);
+        }
+        .quality-score.needs-review {
+            background: rgba(255, 146, 43, 0.2);
+            color: #ff922b;
+        }
+        .btn-add-row {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px dashed var(--antique-gold);
+            border-radius: 8px;
+            color: var(--antique-gold);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-bottom: 1rem;
+        }
+        .btn-add-row:hover {
+            background: rgba(201, 162, 39, 0.15);
+        }
+        .btn-remove-row {
+            padding: 0.3rem 0.6rem;
+            background: transparent;
+            border: 1px solid var(--danger);
+            border-radius: 4px;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-family: inherit;
+        }
+        .btn-remove-row:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+        #btn-batch-publish {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, var(--success) 0%, #40c057 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        #btn-batch-publish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(81, 207, 102, 0.35);
+        }
+        #btn-batch-publish:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #batch-publish-progress {
+            margin-top: 1rem;
+            height: 8px;
+            background: rgba(201, 162, 39, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            display: none;
+            flex: 1;
+        }
+        #batch-publish-progress .bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--nailong-yellow));
+            border-radius: 4px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        #batch-publish-progress .pct {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--cream);
+            margin-top: 0.3rem;
+        }
+
     </style>
 </head>
 <body>
@@ -728,6 +903,7 @@
         <button class="tab-btn" data-tab="manage" id="tab-manage">题库管理</button>
         <button class="tab-btn" data-tab="add" id="tab-add">添加题目</button>
         <button class="tab-btn" data-tab="stats" id="tab-stats">数据统计</button>
+        <button class="tab-btn" data-tab="report" id="tab-report">审核报告</button>
     </nav>
 
     <div class="tab-content active" id="content-review">
@@ -846,6 +1022,60 @@
             <div class="stat-card">
                 <div class="stat-number" id="stat-users">-</div>
                 <div class="stat-label">注册用户数</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="tab-content" id="content-report">
+        <h3 class="section-title">审核报告</h3>
+        <div class="report-summary" id="report-summary">
+            <div class="summary-card">
+                <div class="val" id="report-total">0</div>
+                <div class="lbl">待发布题目</div>
+            </div>
+            <div class="summary-card">
+                <div class="val" id="report-avg-score">-</div>
+                <div class="lbl">平均质量分</div>
+            </div>
+            <div class="summary-card">
+                <div class="val" id="report-excellent">0</div>
+                <div class="lbl">优质 (≥90)</div>
+            </div>
+            <div class="summary-card">
+                <div class="val" id="report-good">0</div>
+                <div class="lbl">可用 (70-89)</div>
+            </div>
+        </div>
+        <button class="btn-add-row" id="btn-add-report-row">+ 添加新行</button>
+        <div style="overflow-x: auto;">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th style="width:70px">图片</th>
+                        <th style="width:120px">题目名称</th>
+                        <th style="width:90px">艺术家</th>
+                        <th style="width:60px">年代</th>
+                        <th style="width:90px">选项A</th>
+                        <th style="width:90px">选项B</th>
+                        <th style="width:90px">选项C</th>
+                        <th style="width:90px">选项D</th>
+                        <th style="width:200px">讲解</th>
+                        <th style="width:100px">原画URL</th>
+                        <th style="width:60px">评分</th>
+                        <th style="width:50px">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="report-table-body">
+                    <tr><td colspan="12" class="empty-state">点击"+ 添加新行"开始</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;">
+            <button id="btn-batch-publish">一键批量发布</button>
+            <div id="batch-publish-progress">
+                <div class="bar"></div>
+                <div class="pct">0/0</div>
             </div>
         </div>
     </div>
@@ -997,6 +1227,7 @@
         if (tabName === 'review') loadSubmissions();
         if (tabName === 'manage') loadPaintings();
         if (tabName === 'stats') loadStats();
+        if (tabName === 'report') updateReportSummary();
     }
 
     function initDashboard() {
@@ -1068,6 +1299,9 @@
         });
 
         document.getElementById('btn-publish').addEventListener('click', handlePublish);
+
+        document.getElementById('btn-add-report-row').addEventListener('click', addReportRow);
+        document.getElementById('btn-batch-publish').addEventListener('click', batchPublish);
 
         document.getElementById('confirm-cancel').addEventListener('click', closeConfirmModal);
         document.getElementById('confirm-ok').addEventListener('click', function() {
@@ -1448,7 +1682,231 @@
         });
     }
 
+    var reportRowCounter = 0;
+
+    function addReportRow() {
+        reportRowCounter++;
+        var rowId = 'report-row-' + reportRowCounter;
+        var tbody = document.getElementById('report-table-body');
+
+        var emptyRow = tbody.querySelector('.empty-state');
+        if (emptyRow) {
+            var parentRow = emptyRow.parentNode;
+            if (parentRow) parentRow.remove();
+        }
+
+        var row = document.createElement('tr');
+        row.className = 'report-row';
+        row.setAttribute('data-row', reportRowCounter);
+        row.id = rowId;
+        row.innerHTML = '<td>' +
+            '<input type="text" name="painting-image" placeholder="图片URL" oninput="window._reportPreviewImage(this, ' + reportRowCounter + ')">' +
+            '<img class="report-thumb" id="report-thumb-' + reportRowCounter + '" style="display:none;margin-top:4px" src="">' +
+            '</td>' +
+            '<td><input type="text" name="painting-title" placeholder="题目名称"></td>' +
+            '<td><input type="text" name="painting-artist" placeholder="艺术家"></td>' +
+            '<td><input type="text" name="painting-year" placeholder="年代"></td>' +
+            '<td><input type="text" name="option-a" placeholder="选项A"></td>' +
+            '<td><input type="text" name="option-b" placeholder="选项B"></td>' +
+            '<td><input type="text" name="option-c" placeholder="选项C"></td>' +
+            '<td><input type="text" name="option-d" placeholder="选项D"></td>' +
+            '<td><textarea name="painting-explanation" placeholder="500-800字讲解" rows="4"></textarea></td>' +
+            '<td><input type="text" name="original-painting-url" placeholder="原画URL"></td>' +
+            '<td><input type="number" name="quality-score" placeholder="0-100" min="0" max="100" style="width:60px" oninput="window._reportUpdateScore()"></td>' +
+            '<td><button class="btn-remove-row" onclick="window._reportRemoveRow(' + reportRowCounter + ')">X</button>' +
+            '<input type="hidden" name="submission-id" value=""></td>';
+
+        tbody.appendChild(row);
+        updateReportSummary();
+    }
+
+    window._reportPreviewImage = function(input, rowNum) {
+        var url = input.value.trim();
+        var img = document.getElementById('report-thumb-' + rowNum);
+        if (url) {
+            img.src = url;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
+        }
+    };
+
+    window._reportUpdateScore = function() {
+        updateReportSummary();
+    };
+
+    window._reportRemoveRow = function(rowNum) {
+        var row = document.getElementById('report-row-' + rowNum);
+        if (row) {
+            row.parentNode.removeChild(row);
+        }
+        updateReportSummary();
+    };
+
+    function updateReportSummary() {
+        var rows = document.querySelectorAll('#report-table-body .report-row');
+        var total = rows.length;
+        var sumScore = 0;
+        var scoreCount = 0;
+        var excellent = 0;
+        var good = 0;
+
+        rows.forEach(function(row) {
+            var scoreInput = row.querySelector('[name="quality-score"]');
+            var score = parseInt(scoreInput.value, 10);
+            if (!isNaN(score)) {
+                sumScore += score;
+                scoreCount++;
+                if (score >= 90) excellent++;
+                else if (score >= 70) good++;
+            }
+        });
+
+        var totalEl = document.getElementById('report-total');
+        var avgEl = document.getElementById('report-avg-score');
+        var excEl = document.getElementById('report-excellent');
+        var goodEl = document.getElementById('report-good');
+        if (totalEl) totalEl.textContent = total;
+        if (avgEl) avgEl.textContent = scoreCount > 0 ? Math.round(sumScore / scoreCount) : '-';
+        if (excEl) excEl.textContent = excellent;
+        if (goodEl) goodEl.textContent = good;
+
+        if (total === 0) {
+            var tbody = document.getElementById('report-table-body');
+            if (tbody && tbody.querySelectorAll('.report-row').length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" class="empty-state">点击"+ 添加新行"开始</td></tr>';
+            }
+        }
+    }
+
+    function collectReportData() {
+        var rows = document.querySelectorAll('#report-table-body .report-row');
+        var data = [];
+        rows.forEach(function(row) {
+            var getVal = function(name) {
+                var el = row.querySelector('[name="' + name + '"]');
+                return el ? el.value.trim() : '';
+            };
+            var score = parseInt(getVal('quality-score'), 10);
+            var item = {
+                image: getVal('painting-image'),
+                title: getVal('painting-title'),
+                artist: getVal('painting-artist'),
+                year: getVal('painting-year'),
+                optionA: getVal('option-a'),
+                optionB: getVal('option-b'),
+                optionC: getVal('option-c'),
+                optionD: getVal('option-d'),
+                explanation: getVal('painting-explanation'),
+                originalPaintingUrl: getVal('original-painting-url'),
+                qualityScore: isNaN(score) ? 0 : score,
+                submissionId: getVal('submission-id')
+            };
+            data.push(item);
+        });
+        return data;
+    }
+
+    function batchPublish() {
+        var items = collectReportData();
+        if (items.length === 0) {
+            showStatus('审核报告中没有待发布题目', 'error');
+            return;
+        }
+
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            if (!it.image || !it.title || !it.artist || !it.optionA || !it.optionB || !it.optionC || !it.optionD || !it.explanation) {
+                showStatus('第' + (i + 1) + '行有必填字段为空，请补充后重试', 'error');
+                return;
+            }
+        }
+
+        showConfirm('确认批量发布', '共 ' + items.length + ' 道题目待发布，确认发布？', function() {
+            executeBatchPublish(items, 0);
+        });
+    }
+
+    function executeBatchPublish(items, index) {
+        var btn = document.getElementById('btn-batch-publish');
+        var progress = document.getElementById('batch-publish-progress');
+        var bar = progress.querySelector('.bar');
+        var pct = progress.querySelector('.pct');
+
+        btn.disabled = true;
+        progress.style.display = 'block';
+
+        function updateProgress(done, total) {
+            var w = Math.round((done / total) * 100);
+            bar.style.width = w + '%';
+            pct.textContent = done + '/' + total;
+        }
+
+        function publishNext() {
+            if (index >= items.length) {
+                btn.disabled = false;
+                updateProgress(items.length, items.length);
+                showStatus('批量发布完成！共发布 ' + items.length + ' 道题目', 'success');
+                document.getElementById('report-table-body').innerHTML = '<tr><td colspan="12" class="empty-state">点击"+ 添加新行"开始</td></tr>';
+                return;
+            }
+
+            updateProgress(index, items.length);
+            var it = items[index];
+
+            var options = [it.optionA, it.optionB, it.optionC, it.optionD];
+            for (var i = options.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = options[i];
+                options[i] = options[j];
+                options[j] = temp;
+            }
+
+            var paintingData = {
+                image: it.image,
+                title: it.title,
+                artist: it.artist,
+                year: it.year || null,
+                options: options,
+                explanation: it.explanation,
+                status: 'active',
+                original_painting: it.originalPaintingUrl || null
+            };
+
+            supabase.from('paintings')
+                .insert(paintingData)
+                .then(function(result) {
+                    if (result.error) {
+                        showStatus('发布第' + (index + 1) + '题失败: ' + result.error.message, 'error');
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    if (it.submissionId) {
+                        supabase.from('submissions')
+                            .update({ status: 'approved' })
+                            .eq('id', it.submissionId)
+                            .then(function() {
+                                var sub = allSubmissions.find(function(s) { return String(s.id) == String(it.submissionId); });
+                                if (sub) sub.status = 'approved';
+                            });
+                    }
+
+                    index++;
+                    publishNext();
+                })
+                .catch(function(err) {
+                    showStatus('发布第' + (index + 1) + '题网络错误', 'error');
+                    btn.disabled = false;
+                });
+        }
+
+        updateProgress(0, items.length);
+        publishNext();
+    }
+
     function restoreSession() {
+        function restoreSession() {
         supabase.auth.getSession().then(function(result) {
             if (result.data && result.data.session) {
                 var user = result.data.session.user;
