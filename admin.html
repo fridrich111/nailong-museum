@@ -1011,8 +1011,8 @@
         document.getElementById('review-list').addEventListener('click', function(e) {
             var btn = e.target.closest('.btn-approve, .btn-reject');
             if (!btn) return;
-            var id = parseInt(btn.getAttribute('data-id'), 10);
-            if (isNaN(id)) return;
+            var id = btn.getAttribute('data-id');
+            if (!id) return;
             if (btn.classList.contains('btn-approve')) {
                 window._adminApprove(id);
             } else if (btn.classList.contains('btn-reject')) {
@@ -1175,8 +1175,8 @@
     }
 
     window._adminApprove = function(id) {
-        var sub = allSubmissions.find(function(s) { return s.id == id; });
-        if (!sub) { console.log('[Admin] Approve: not found id=' + id); return; }
+        var sub = allSubmissions.find(function(s) { return String(s.id) == String(id); });
+        if (!sub) { console.log('[Admin] Approve: not found for id=' + id); return; }
 
         document.getElementById('painting-image').value = sub.image_url || '';
         document.getElementById('painting-title').value = sub.original_title || '';
@@ -1214,7 +1214,7 @@
                         showStatus('操作失败: ' + result.error.message, 'error');
                         return;
                     }
-                    var sub = allSubmissions.find(function(s) { return s.id == id; });
+                    var sub = allSubmissions.find(function(s) { return String(s.id) == String(id); });
                     if (sub) sub.status = 'rejected';
                     renderReviewList();
                     showStatus('已拒绝该投稿', 'success');
@@ -1357,7 +1357,7 @@
                             .update({ status: 'approved' })
                             .eq('id', window._currentApproveId)
                             .then(function() {
-                                var sub = allSubmissions.find(function(s) { return s.id === window._currentApproveId; });
+                                var sub = allSubmissions.find(function(s) { return String(s.id) == String(window._currentApproveId); });
                                 if (sub) sub.status = 'approved';
                                 window._currentApproveId = null;
                             });
