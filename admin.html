@@ -916,8 +916,15 @@
         btn.disabled = true;
         btn.textContent = '登录中...';
 
+        var timeoutId = setTimeout(function() {
+            btn.disabled = false;
+            btn.textContent = '登 录';
+            errorEl.textContent = '登录超时，请检查网络后重试';
+        }, 15000);
+
         supabase.auth.signInWithPassword({ email: email, password: password })
             .then(function(result) {
+                clearTimeout(timeoutId);
                 btn.disabled = false;
                 btn.textContent = '登 录';
 
@@ -927,6 +934,8 @@
                         errorEl.textContent = '邮箱或密码错误';
                     } else if (msg.indexOf('Email not confirmed') !== -1) {
                         errorEl.textContent = '邮箱尚未验证';
+                    } else if (msg.indexOf('Too many requests') !== -1) {
+                        errorEl.textContent = '请求过于频繁，请稍后再试';
                     } else {
                         errorEl.textContent = '登录失败: ' + msg;
                     }
@@ -949,10 +958,15 @@
                 }
             })
             .catch(function(err) {
+                clearTimeout(timeoutId);
                 btn.disabled = false;
                 btn.textContent = '登 录';
-                errorEl.textContent = '网络错误';
                 console.error('[Admin] Login error:', err);
+                if (err.message && err.message.indexOf('fetch') !== -1) {
+                    errorEl.textContent = '网络错误，请检查网络连接';
+                } else {
+                    errorEl.textContent = '登录失败: ' + (err.message || '请稍后再试');
+                }
             });
     }
 
