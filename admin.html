@@ -1,0 +1,1481 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>濂堕緳缇庢湳棣?- 绠＄悊闈㈡澘</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --deep-indigo: #1a1a2e;
+            --nailong-yellow: #FFD93D;
+            --antique-gold: #C9A227;
+            --cream: #F5F5DC;
+            --danger: #FF6B6B;
+            --success: #51CF66;
+            --warning: #FFD43B;
+            --info: #74C0FC;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: var(--deep-indigo);
+            color: var(--cream);
+            min-height: 100vh;
+        }
+
+        /* ===== Login Screen ===== */
+        #login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        .login-card {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            border: 2px solid var(--antique-gold);
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 0 60px rgba(201, 162, 39, 0.15);
+        }
+        .login-card h1 {
+            color: var(--antique-gold);
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+        .login-card .subtitle {
+            color: rgba(245, 245, 220, 0.6);
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .login-card .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .login-card .form-group label {
+            display: block;
+            color: var(--antique-gold);
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .login-card .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--antique-gold);
+            border-radius: 12px;
+            background: rgba(26, 26, 46, 0.6);
+            color: var(--cream);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .login-card .form-group input:focus {
+            outline: none;
+            border-color: var(--nailong-yellow);
+            box-shadow: 0 0 0 3px rgba(255, 217, 61, 0.15);
+        }
+        .login-card .form-group input::placeholder {
+            color: rgba(245, 245, 220, 0.35);
+        }
+        #login-error {
+            color: var(--danger);
+            text-align: center;
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        #login-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--deep-indigo);
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+        #login-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 217, 61, 0.35);
+        }
+        #login-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== Dashboard ===== */
+        #dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        .dashboard-header {
+            background: rgba(26, 26, 46, 0.95);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .dashboard-header h2 {
+            color: var(--antique-gold);
+            font-size: 1.3rem;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-right .admin-email {
+            color: var(--cream);
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        #btn-logout {
+            padding: 0.4rem 1rem;
+            background: transparent;
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        #btn-logout:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+
+        /* ===== Tabs ===== */
+        .tab-nav {
+            display: flex;
+            background: rgba(26, 26, 46, 0.8);
+            border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+            padding: 0 2rem;
+            gap: 0;
+        }
+        .tab-btn {
+            padding: 0.9rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: rgba(245, 245, 220, 0.6);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .tab-btn:hover {
+            color: var(--antique-gold);
+        }
+        .tab-btn.active {
+            color: var(--nailong-yellow);
+            border-bottom-color: var(--nailong-yellow);
+        }
+        .tab-badge {
+            display: inline-block;
+            background: var(--danger);
+            color: #fff;
+            border-radius: 10px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.75rem;
+            margin-left: 0.4rem;
+            min-width: 1.2rem;
+            text-align: center;
+        }
+        .tab-content {
+            display: none;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== Status Message ===== */
+        #status-message {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 9999;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            opacity: 0;
+        }
+        #status-message.show {
+            opacity: 1;
+        }
+        #status-message.success {
+            background: rgba(81, 207, 102, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        #status-message.error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        #status-message.info {
+            background: rgba(116, 192, 252, 0.2);
+            border: 1px solid var(--info);
+            color: var(--info);
+        }
+
+        /* ===== Review Tab ===== */
+        .section-title {
+            color: var(--antique-gold);
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+        }
+        .review-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.4rem 1rem;
+            background: transparent;
+            border: 1px solid rgba(201, 162, 39, 0.4);
+            border-radius: 20px;
+            color: var(--cream);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(201, 162, 39, 0.2);
+            border-color: var(--antique-gold);
+        }
+        #review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .review-card {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(201, 162, 39, 0.25);
+            border-radius: 16px;
+            padding: 1.2rem;
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+            transition: border-color 0.3s;
+        }
+        .review-card:hover {
+            border-color: var(--antique-gold);
+        }
+        .review-card .thumb {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            flex-shrink: 0;
+        }
+        .review-card .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .review-card .info h4 {
+            color: var(--nailong-yellow);
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }
+        .review-card .info .meta {
+            color: rgba(245, 245, 220, 0.6);
+            font-size: 0.85rem;
+            margin-bottom: 0.2rem;
+        }
+        .review-card .info .meta span {
+            margin-right: 1rem;
+        }
+        .review-card .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn-approve {
+            padding: 0.5rem 1.2rem;
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .btn-approve:hover {
+            background: #40c057;
+            transform: scale(1.03);
+        }
+        .btn-approve:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-reject {
+            padding: 0.5rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .btn-reject:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+        .btn-reject:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .dup-badge {
+            display: inline-block;
+            background: rgba(255, 212, 59, 0.2);
+            border: 1px solid var(--warning);
+            border-radius: 6px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.75rem;
+            color: var(--warning);
+            margin-top: 0.4rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.pending {
+            background: rgba(255, 212, 59, 0.2);
+            color: var(--warning);
+        }
+        .status-badge.approved {
+            background: rgba(81, 207, 102, 0.2);
+            color: var(--success);
+        }
+        .status-badge.rejected {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--danger);
+        }
+
+        /* ===== Manage Tab ===== */
+        .manage-toolbar {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        #manage-search {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--antique-gold);
+            border-radius: 10px;
+            background: rgba(26, 26, 46, 0.6);
+            color: var(--cream);
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 200px;
+            font-family: inherit;
+        }
+        #manage-search::placeholder {
+            color: rgba(245, 245, 220, 0.35);
+        }
+        #manage-search:focus {
+            outline: none;
+            border-color: var(--nailong-yellow);
+        }
+        .btn-refresh {
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 1px solid var(--antique-gold);
+            border-radius: 10px;
+            color: var(--antique-gold);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .btn-refresh:hover {
+            background: rgba(201, 162, 39, 0.2);
+        }
+        .painting-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .painting-table th {
+            text-align: left;
+            padding: 0.8rem;
+            color: var(--antique-gold);
+            border-bottom: 2px solid rgba(201, 162, 39, 0.3);
+            font-weight: 600;
+        }
+        .painting-table td {
+            padding: 0.7rem 0.8rem;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.1);
+        }
+        .painting-table .painting-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+        .painting-table .btn-delete {
+            padding: 0.3rem 0.7rem;
+            background: transparent;
+            border: 1px solid var(--danger);
+            border-radius: 6px;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .painting-table .btn-delete:hover {
+            background: rgba(255, 107, 107, 0.15);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(245, 245, 220, 0.5);
+            font-size: 1rem;
+        }
+
+        /* ===== Add Tab ===== */
+        .add-form {
+            max-width: 700px;
+        }
+        .add-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 600px) {
+            .add-form .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .add-form .form-group {
+            margin-bottom: 1rem;
+        }
+        .add-form .form-group label {
+            display: block;
+            color: var(--antique-gold);
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .add-form .form-group input,
+        .add-form .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--antique-gold);
+            border-radius: 10px;
+            background: rgba(26, 26, 46, 0.6);
+            color: var(--cream);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .add-form .form-group input:focus,
+        .add-form .form-group textarea:focus {
+            outline: none;
+            border-color: var(--nailong-yellow);
+            box-shadow: 0 0 0 3px rgba(255, 217, 61, 0.1);
+        }
+        .add-form .form-group input::placeholder,
+        .add-form .form-group textarea::placeholder {
+            color: rgba(245, 245, 220, 0.35);
+        }
+        .add-form .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .add-form .form-group .file-input-wrapper {
+            position: relative;
+        }
+        .add-form .form-group .file-input-wrapper input[type="file"] {
+            padding: 0.5rem;
+            border-style: dashed;
+            cursor: pointer;
+        }
+        .add-form .form-group .preview-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-top: 0.5rem;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+        }
+        #btn-publish {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--nailong-yellow) 0%, var(--antique-gold) 100%);
+            border: none;
+            border-radius: 12px;
+            color: var(--deep-indigo);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            font-family: inherit;
+        }
+        #btn-publish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 217, 61, 0.35);
+        }
+        #btn-publish:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== Stats Tab ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(201, 162, 39, 0.25);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        .stat-card:hover {
+            border-color: var(--antique-gold);
+        }
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--nailong-yellow);
+            line-height: 1.2;
+        }
+        .stat-card .stat-label {
+            color: rgba(245, 245, 220, 0.7);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ===== Loading Spinner ===== */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(201, 162, 39, 0.3);
+            border-top-color: var(--antique-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--deep-indigo);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 2px solid var(--antique-gold);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-content h3 {
+            color: var(--antique-gold);
+            margin-bottom: 1rem;
+        }
+        .modal-content p {
+            color: var(--cream);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+        .modal-actions .btn-confirm {
+            padding: 0.6rem 1.5rem;
+            background: var(--danger);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .modal-actions .btn-cancel {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            border: 1px solid var(--antique-gold);
+            border-radius: 8px;
+            color: var(--antique-gold);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .tab-nav {
+                padding: 0 0.5rem;
+                overflow-x: auto;
+            }
+            .tab-btn {
+                padding: 0.7rem 0.8rem;
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+            .tab-content {
+                padding: 1rem;
+            }
+            .review-card {
+                flex-direction: column;
+            }
+            .review-card .actions {
+                flex-direction: row;
+                width: 100%;
+            }
+            .painting-table {
+                font-size: 0.75rem;
+            }
+            .painting-table th:nth-child(3),
+            .painting-table td:nth-child(3),
+            .painting-table th:nth-child(5),
+            .painting-table td:nth-child(5) {
+                display: none;
+            }
+            .dashboard-header {
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== Login Screen ===== -->
+<div id="login-screen">
+    <div class="login-card">
+        <h1>濂堕緳缇庢湳棣?/h1>
+        <p class="subtitle">绠＄悊闈㈡澘 路 绠＄悊鍛樼櫥褰?/p>
+        <div id="login-error"></div>
+        <div class="form-group">
+            <label for="login-email">绠＄悊鍛橀偖绠?/label>
+            <input type="email" id="login-email" placeholder="璇疯緭鍏ョ鐞嗗憳閭" autocomplete="email">
+        </div>
+        <div class="form-group">
+            <label for="login-password">瀵嗙爜</label>
+            <input type="password" id="login-password" placeholder="璇疯緭鍏ュ瘑鐮? autocomplete="current-password">
+        </div>
+        <button id="login-submit">鐧?褰?/button>
+    </div>
+</div>
+
+<!-- ===== Dashboard ===== -->
+<div id="dashboard">
+    <header class="dashboard-header">
+        <h2>濂堕緳缇庢湳棣?路 绠＄悊闈㈡澘</h2>
+        <div class="header-right">
+            <span class="admin-email" id="admin-email-display"></span>
+            <button id="btn-logout">閫€鍑虹櫥褰?/button>
+        </div>
+    </header>
+
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="review" id="tab-review">
+            鎶曠瀹℃牳<span class="tab-badge" id="review-badge" style="display:none">0</span>
+        </button>
+        <button class="tab-btn" data-tab="manage" id="tab-manage">棰樺簱绠＄悊</button>
+        <button class="tab-btn" data-tab="add" id="tab-add">娣诲姞棰樼洰</button>
+        <button class="tab-btn" data-tab="stats" id="tab-stats">鏁版嵁缁熻</button>
+    </nav>
+
+    <!-- Tab: 鎶曠瀹℃牳 -->
+    <div class="tab-content active" id="content-review">
+        <h3 class="section-title">鎶曠瀹℃牳</h3>
+        <div class="review-toolbar">
+            <button class="filter-btn active" data-filter="all">鍏ㄩ儴</button>
+            <button class="filter-btn" data-filter="pending">寰呭鏍?/button>
+            <button class="filter-btn" data-filter="approved">宸查€氳繃</button>
+            <button class="filter-btn" data-filter="rejected">宸叉嫆缁?/button>
+        </div>
+        <div id="review-list">
+            <div class="empty-state">鍔犺浇涓?..</div>
+        </div>
+    </div>
+
+    <!-- Tab: 棰樺簱绠＄悊 -->
+    <div class="tab-content" id="content-manage">
+        <h3 class="section-title">棰樺簱绠＄悊</h3>
+        <div class="manage-toolbar">
+            <input type="text" id="manage-search" placeholder="鎼滅储棰樼洰鍚嶇О鎴栬壓鏈...">
+            <button class="btn-refresh" id="btn-refresh-manage">鍒锋柊鍒楄〃</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="painting-table">
+                <thead>
+                    <tr>
+                        <th>鍥剧墖</th>
+                        <th>棰樼洰鍚嶇О</th>
+                        <th>鑹烘湳瀹?/th>
+                        <th>骞翠唬</th>
+                        <th>鐘舵€?/th>
+                        <th>鎿嶄綔</th>
+                    </tr>
+                </thead>
+                <tbody id="manage-table-body">
+                    <tr><td colspan="6" class="empty-state">鍔犺浇涓?..</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab: 娣诲姞棰樼洰 -->
+    <div class="tab-content" id="content-add">
+        <h3 class="section-title">娣诲姞棰樼洰</h3>
+        <div class="add-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="painting-image">棰樼洰鍥剧墖 URL</label>
+                    <input type="text" id="painting-image" placeholder="杈撳叆鍥剧墖URL鍦板潃">
+                    <img class="preview-img" id="painting-image-preview" style="display:none" src="" alt="棰勮">
+                </div>
+                <div class="form-group">
+                    <label for="original-painting-upload">涓婁紶鍘熺敾鍥剧墖</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="original-painting-upload" accept="image/*">
+                    </div>
+                    <img class="preview-img" id="original-painting-preview" style="display:none" src="" alt="鍘熺敾棰勮">
+                    <input type="hidden" id="original-painting-url">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="painting-title">鍘熺敾鍚嶇О *</label>
+                    <input type="text" id="painting-title" placeholder="濡傦細钂欏涓借帋">
+                </div>
+                <div class="form-group">
+                    <label for="painting-artist">鑹烘湳瀹?*</label>
+                    <input type="text" id="painting-artist" placeholder="濡傦細鍒楀ゥ绾冲路杈韭疯姮濂?>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="painting-year">鍒涗綔骞翠唬</label>
+                <input type="text" id="painting-year" placeholder="濡傦細1503-1519">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="option-a">閫夐」 A锛堟纭瓟妗堬級*</label>
+                    <input type="text" id="option-a" placeholder="姝ｇ‘绛旀">
+                </div>
+                <div class="form-group">
+                    <label for="option-b">閫夐」 B *</label>
+                    <input type="text" id="option-b" placeholder="骞叉壈椤?>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="option-c">閫夐」 C *</label>
+                    <input type="text" id="option-c" placeholder="骞叉壈椤?>
+                </div>
+                <div class="form-group">
+                    <label for="option-d">閫夐」 D *</label>
+                    <input type="text" id="option-d" placeholder="骞叉壈椤?>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="painting-explanation">璁茶В鏂囧瓧锛?00-200瀛楋級*</label>
+                <textarea id="painting-explanation" placeholder="鍖呭惈浣滆€呫€佸勾浠ｃ€佸垱浣滆儗鏅€佽壓鏈环鍊煎拰甯歌鑰冪偣..."></textarea>
+            </div>
+            <button id="btn-publish">鍙戝竷棰樼洰</button>
+        </div>
+    </div>
+
+    <!-- Tab: 鏁版嵁缁熻 -->
+    <div class="tab-content" id="content-stats">
+        <h3 class="section-title">鏁版嵁缁熻</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-paintings">-</div>
+                <div class="stat-label">鎬婚鐩暟</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-submissions">-</div>
+                <div class="stat-label">鎬绘姇绋挎暟</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-pending">-</div>
+                <div class="stat-label">寰呭鏍告姇绋?/div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-users">-</div>
+                <div class="stat-label">娉ㄥ唽鐢ㄦ埛鏁?/div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Confirm Modal ===== -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal-content">
+        <h3 id="confirm-title">纭鎿嶄綔</h3>
+        <p id="confirm-message"></p>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="confirm-cancel">鍙栨秷</button>
+            <button class="btn-confirm" id="confirm-ok">纭</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Status Message ===== -->
+<div id="status-message"></div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============ 閰嶇疆 ============
+    // 鈿狅笍 璇峰皢绠＄悊鍛橀偖绠辨坊鍔犲埌涓嬫柟鏁扮粍涓?    var ADMIN_EMAILS = [
+        '19516778198@163.com'
+    ];
+
+    var SUPABASE_URL = 'https://datenwietosgfprmxcua.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdGVud2lldG9zZ2Zwcm14Y3VhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODQ1MzgsImV4cCI6MjA5NDc2MDUzOH0.07g82Otjv8SIxN_YIc3PYm0GLlF9wYwDQyJBkhUD0ME';
+
+    var supabase = null;
+    var currentUser = null;
+    var currentFilter = 'all';
+    var allSubmissions = [];
+    var allPaintings = [];
+
+    // ============ 鍒濆鍖?Supabase ============
+    function initSupabase() {
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('[Admin] Supabase 鍒濆鍖栨垚鍔?);
+        } catch (err) {
+            console.error('[Admin] Supabase 鍒濆鍖栧け璐?', err);
+            showStatus('鏁版嵁搴撹繛鎺ュけ璐ワ紝璇峰埛鏂伴〉闈㈤噸璇?, 'error');
+        }
+    }
+
+    // ============ 鐘舵€佹彁绀?============
+    function showStatus(msg, type) {
+        var el = document.getElementById('status-message');
+        el.textContent = msg;
+        el.className = type + ' show';
+        clearTimeout(el._timeout);
+        el._timeout = setTimeout(function() {
+            el.classList.remove('show');
+        }, 3000);
+    }
+
+    // ============ 鐧诲綍 ============
+    function handleLogin() {
+        var email = document.getElementById('login-email').value.trim();
+        var password = document.getElementById('login-password').value;
+        var errorEl = document.getElementById('login-error');
+        var btn = document.getElementById('login-submit');
+
+        if (!email || !password) {
+            errorEl.textContent = '璇峰～鍐欓偖绠卞拰瀵嗙爜';
+            return;
+        }
+
+        errorEl.textContent = '';
+        btn.disabled = true;
+        btn.textContent = '鐧诲綍涓?..';
+
+        supabase.auth.signInWithPassword({ email: email, password: password })
+            .then(function(result) {
+                btn.disabled = false;
+                btn.textContent = '鐧?褰?;
+
+                if (result.error) {
+                    var msg = result.error.message || '';
+                    if (msg.indexOf('Invalid login credentials') !== -1) {
+                        errorEl.textContent = '閭鎴栧瘑鐮侀敊璇?;
+                    } else if (msg.indexOf('Email not confirmed') !== -1) {
+                        errorEl.textContent = '閭灏氭湭楠岃瘉锛岃鍏堟煡鏀剁‘璁ら偖浠?;
+                    } else {
+                        errorEl.textContent = '鐧诲綍澶辫触: ' + msg;
+                    }
+                    return;
+                }
+
+                if (result.data && result.data.user) {
+                    var userEmail = result.data.user.email;
+                    if (ADMIN_EMAILS.length > 0 && ADMIN_EMAILS.indexOf(userEmail) === -1) {
+                        errorEl.textContent = '璇ヨ处鍙锋棤绠＄悊鍛樻潈闄?;
+                        supabase.auth.signOut();
+                        return;
+                    }
+
+                    currentUser = result.data.user;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('admin-email-display').textContent = userEmail;
+                    initDashboard();
+                }
+            })
+            .catch(function(err) {
+                btn.disabled = false;
+                btn.textContent = '鐧?褰?;
+                errorEl.textContent = '缃戠粶閿欒锛岃妫€鏌ョ綉缁滆繛鎺?;
+                console.error('[Admin] Login error:', err);
+            });
+    }
+
+    // ============ 閫€鍑虹櫥褰?============
+    function handleLogout() {
+        supabase.auth.signOut().then(function() {
+            currentUser = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').textContent = '';
+        });
+    }
+
+    // ============ Tab 鍒囨崲 ============
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(function(content) {
+            content.classList.remove('active');
+        });
+
+        var tabBtn = document.getElementById('tab-' + tabName);
+        var tabContent = document.getElementById('content-' + tabName);
+        if (tabBtn) tabBtn.classList.add('active');
+        if (tabContent) tabContent.classList.add('active');
+
+        if (tabName === 'review') loadSubmissions();
+        if (tabName === 'manage') loadPaintings();
+        if (tabName === 'stats') loadStats();
+    }
+
+    // ============ 鍒濆鍖?Dashboard ============
+    function initDashboard() {
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                switchTab(this.getAttribute('data-tab'));
+            });
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', handleLogout);
+        document.getElementById('login-submit').addEventListener('click', handleLogin);
+
+        document.getElementById('login-password').addEventListener('keydown', function(e) {
+            if (e.keyCode === 13) handleLogin();
+        });
+
+        document.querySelectorAll('#content-review .filter-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#content-review .filter-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                currentFilter = this.getAttribute('data-filter');
+                renderReviewList();
+            });
+        });
+
+        var searchTimer = null;
+        document.getElementById('manage-search').addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(renderManageTable, 300);
+        });
+
+        document.getElementById('btn-refresh-manage').addEventListener('click', function() {
+            loadPaintings();
+        });
+
+        document.getElementById('painting-image').addEventListener('input', function() {
+            var url = this.value.trim();
+            var preview = document.getElementById('painting-image-preview');
+            if (url) {
+                preview.src = url;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('original-painting-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            var preview = document.getElementById('original-painting-preview');
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-publish').addEventListener('click', handlePublish);
+
+        document.getElementById('confirm-cancel').addEventListener('click', closeConfirmModal);
+        document.getElementById('confirm-ok').addEventListener('click', function() {
+            if (window._confirmCallback) {
+                window._confirmCallback();
+                window._confirmCallback = null;
+            }
+            closeConfirmModal();
+        });
+
+        loadSubmissions();
+    }
+
+    // ============ 纭寮圭獥 ============
+    function showConfirm(title, message, callback) {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        document.getElementById('confirm-modal').classList.add('show');
+        window._confirmCallback = callback;
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').classList.remove('show');
+    }
+
+    // ============ 1. 鎶曠瀹℃牳 ============
+    function loadSubmissions() {
+        var list = document.getElementById('review-list');
+        list.innerHTML = '<div class="empty-state"><span class="loading-spinner"></span>鍔犺浇涓?..</div>';
+
+        supabase.from('submissions')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .then(function(result) {
+                if (result.error) {
+                    console.error('[Admin] Load submissions error:', result.error);
+                    list.innerHTML = '<div class="empty-state">鍔犺浇澶辫触: ' + result.error.message + '</div>';
+                    return;
+                }
+                allSubmissions = result.data || [];
+                renderReviewList();
+            });
+    }
+
+    function renderReviewList() {
+        var list = document.getElementById('review-list');
+        var filtered = allSubmissions;
+
+        if (currentFilter !== 'all') {
+            filtered = allSubmissions.filter(function(s) {
+                return s.status === currentFilter;
+            });
+        }
+
+        var pendingCount = allSubmissions.filter(function(s) { return s.status === 'pending'; }).length;
+        var badge = document.getElementById('review-badge');
+        if (pendingCount > 0) {
+            badge.textContent = pendingCount;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="empty-state">鏆傛棤鎶曠</div>';
+            return;
+        }
+
+        list.innerHTML = filtered.map(function(sub) {
+            var statusLabel = '';
+            var statusClass = '';
+            if (sub.status === 'pending') {
+                statusLabel = '寰呭鏍?;
+                statusClass = 'pending';
+            } else if (sub.status === 'approved') {
+                statusLabel = '宸查€氳繃';
+                statusClass = 'approved';
+            } else if (sub.status === 'rejected') {
+                statusLabel = '宸叉嫆缁?;
+                statusClass = 'rejected';
+            }
+
+            var actionsHtml = '';
+            if (sub.status === 'pending') {
+                actionsHtml = '<button class="btn-approve" data-id="' + sub.id + '" onclick="window._adminApprove(' + sub.id + ')">閫氳繃</button>' +
+                              '<button class="btn-reject" data-id="' + sub.id + '" onclick="window._adminReject(' + sub.id + ')">鎷掔粷</button>';
+            }
+
+            var createdAt = sub.created_at ? new Date(sub.created_at).toLocaleString('zh-CN') : '鏈煡';
+
+            return '<div class="review-card">' +
+                '<img class="thumb" src="' + escapeHtml(sub.image_url) + '" alt="' + escapeHtml(sub.original_title || '') + '" onerror="this.style.display=\'none\'">' +
+                '<div class="info">' +
+                    '<h4>' + escapeHtml(sub.original_title || '鏈懡鍚?) + '</h4>' +
+                    '<div class="meta">' +
+                        '<span>鑹烘湳瀹? ' + escapeHtml(sub.original_artist || '鏈煡') + '</span>' +
+                        '<span class="status-badge ' + statusClass + '">' + statusLabel + '</span>' +
+                    '</div>' +
+                    '<div class="meta">' +
+                        '<span>鎶曠浜? ' + escapeHtml(sub.submitter_name || '鍖垮悕') + '</span>' +
+                        '<span>' + createdAt + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="actions">' + actionsHtml + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    window._adminApprove = function(id) {
+        var sub = allSubmissions.find(function(s) { return s.id === id; });
+        if (!sub) return;
+
+        document.getElementById('painting-image').value = sub.image_url || '';
+        document.getElementById('painting-title').value = sub.original_title || '';
+        document.getElementById('painting-artist').value = sub.original_artist || '';
+        document.getElementById('painting-year').value = '';
+        document.getElementById('option-a').value = '';
+        document.getElementById('option-b').value = '';
+        document.getElementById('option-c').value = '';
+        document.getElementById('option-d').value = '';
+        document.getElementById('painting-explanation').value = '';
+        document.getElementById('original-painting-url').value = '';
+        document.getElementById('original-painting-upload').value = '';
+
+        var preview = document.getElementById('painting-image-preview');
+        if (sub.image_url) {
+            preview.src = sub.image_url;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+        document.getElementById('original-painting-preview').style.display = 'none';
+
+        window._currentApproveId = id;
+        switchTab('add');
+        showStatus('宸插姞杞芥姇绋夸俊鎭紝璇峰～鍐欏墿浣欏瓧娈靛悗鍙戝竷', 'info');
+    };
+
+    window._adminReject = function(id) {
+        showConfirm('纭鎷掔粷', '纭畾瑕佹嫆缁濇鎶曠鍚楋紵', function() {
+            supabase.from('submissions')
+                .update({ status: 'rejected' })
+                .eq('id', id)
+                .then(function(result) {
+                    if (result.error) {
+                        showStatus('鎿嶄綔澶辫触: ' + result.error.message, 'error');
+                        return;
+                    }
+                    var sub = allSubmissions.find(function(s) { return s.id === id; });
+                    if (sub) sub.status = 'rejected';
+                    renderReviewList();
+                    showStatus('宸叉嫆缁濊鎶曠', 'success');
+                });
+        });
+    };
+
+    // ============ 2. 棰樺簱绠＄悊 ============
+    function loadPaintings() {
+        var tbody = document.getElementById('manage-table-body');
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><span class="loading-spinner"></span>鍔犺浇涓?..</td></tr>';
+
+        supabase.from('paintings')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .then(function(result) {
+                if (result.error) {
+                    console.error('[Admin] Load paintings error:', result.error);
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">鍔犺浇澶辫触: ' + result.error.message + '</td></tr>';
+                    return;
+                }
+                allPaintings = result.data || [];
+                renderManageTable();
+            });
+    }
+
+    function renderManageTable() {
+        var tbody = document.getElementById('manage-table-body');
+        var searchTerm = document.getElementById('manage-search').value.trim().toLowerCase();
+
+        var filtered = allPaintings;
+        if (searchTerm) {
+            filtered = allPaintings.filter(function(p) {
+                return (p.title && p.title.toLowerCase().indexOf(searchTerm) !== -1) ||
+                       (p.artist && p.artist.toLowerCase().indexOf(searchTerm) !== -1);
+            });
+        }
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">鏆傛棤棰樼洰</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(function(p) {
+            var statusLabel = p.status === 'active' ? '鍚敤' : '鍋滅敤';
+            var statusClass = p.status === 'active' ? 'approved' : 'rejected';
+
+            return '<tr>' +
+                '<td><img class="painting-thumb" src="' + escapeHtml(p.image) + '" alt="" onerror="this.style.display=\'none\'"></td>' +
+                '<td>' + escapeHtml(p.title || '-') + '</td>' +
+                '<td>' + escapeHtml(p.artist || '-') + '</td>' +
+                '<td>' + escapeHtml(p.year || '-') + '</td>' +
+                '<td><span class="status-badge ' + statusClass + '">' + statusLabel + '</span></td>' +
+                '<td><button class="btn-delete" onclick="window._adminDeletePainting(' + p.id + ')">鍒犻櫎</button></td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    window._adminDeletePainting = function(id) {
+        showConfirm('纭鍒犻櫎', '纭畾瑕佸垹闄よ繖閬撻鐩悧锛熷垹闄ゅ悗鐢ㄦ埛灏嗘棤娉曞啀鐪嬪埌姝ら銆?, function() {
+            supabase.from('paintings')
+                .delete()
+                .eq('id', id)
+                .then(function(result) {
+                    if (result.error) {
+                        showStatus('鍒犻櫎澶辫触: ' + result.error.message, 'error');
+                        return;
+                    }
+                    allPaintings = allPaintings.filter(function(p) { return p.id !== id; });
+                    renderManageTable();
+                    showStatus('棰樼洰宸插垹闄?, 'success');
+                });
+        });
+    };
+
+    // ============ 3. 娣诲姞棰樼洰 ============
+    function handlePublish() {
+        var title = document.getElementById('painting-title').value.trim();
+        var artist = document.getElementById('painting-artist').value.trim();
+        var image = document.getElementById('painting-image').value.trim();
+        var year = document.getElementById('painting-year').value.trim();
+        var optA = document.getElementById('option-a').value.trim();
+        var optB = document.getElementById('option-b').value.trim();
+        var optC = document.getElementById('option-c').value.trim();
+        var optD = document.getElementById('option-d').value.trim();
+        var explanation = document.getElementById('painting-explanation').value.trim();
+        var originalPaintingUrl = document.getElementById('original-painting-url').value.trim();
+
+        if (!title || !artist || !image) {
+            showStatus('璇峰～鍐欓鐩浘鐗嘦RL銆佸師鐢诲悕绉板拰鑹烘湳瀹?, 'error');
+            return;
+        }
+        if (!optA || !optB || !optC || !optD) {
+            showStatus('璇峰～鍐欏叏閮ㄥ洓涓€夐」', 'error');
+            return;
+        }
+        if (!explanation) {
+            showStatus('璇峰～鍐欒瑙ｆ枃瀛?, 'error');
+            return;
+        }
+
+        var btn = document.getElementById('btn-publish');
+        btn.disabled = true;
+        btn.textContent = '鍙戝竷涓?..';
+
+        var fileInput = document.getElementById('original-painting-upload');
+        var file = fileInput.files[0];
+
+        function doInsert(finalOriginalUrl) {
+            var options = [optA, optB, optC, optD];
+            for (var i = options.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = options[i];
+                options[i] = options[j];
+                options[j] = temp;
+            }
+
+            var paintingData = {
+                image: image,
+                title: title,
+                artist: artist,
+                year: year || null,
+                options: options,
+                explanation: explanation,
+                status: 'active',
+                original_painting: finalOriginalUrl || null
+            };
+
+            supabase.from('paintings')
+                .insert(paintingData)
+                .then(function(result) {
+                    btn.disabled = false;
+                    btn.textContent = '鍙戝竷棰樼洰';
+
+                    if (result.error) {
+                        showStatus('鍙戝竷澶辫触: ' + result.error.message, 'error');
+                        return;
+                    }
+
+                    if (window._currentApproveId) {
+                        supabase.from('submissions')
+                            .update({ status: 'approved' })
+                            .eq('id', window._currentApproveId)
+                            .then(function() {
+                                var sub = allSubmissions.find(function(s) { return s.id === window._currentApproveId; });
+                                if (sub) sub.status = 'approved';
+                                window._currentApproveId = null;
+                            });
+                    }
+
+                    document.getElementById('painting-image').value = '';
+                    document.getElementById('painting-title').value = '';
+                    document.getElementById('painting-artist').value = '';
+                    document.getElementById('painting-year').value = '';
+                    document.getElementById('option-a').value = '';
+                    document.getElementById('option-b').value = '';
+                    document.getElementById('option-c').value = '';
+                    document.getElementById('option-d').value = '';
+                    document.getElementById('painting-explanation').value = '';
+                    document.getElementById('original-painting-url').value = '';
+                    document.getElementById('original-painting-upload').value = '';
+                    document.getElementById('painting-image-preview').style.display = 'none';
+                    document.getElementById('original-painting-preview').style.display = 'none';
+
+                    showStatus('棰樼洰鍙戝竷鎴愬姛锛?, 'success');
+                });
+        }
+
+        if (file) {
+            var fileExt = file.name.split('.').pop();
+            var fileName = 'original_' + Date.now() + '.' + fileExt;
+
+            supabase.storage.from('paintings')
+                .upload('original/' + fileName, file)
+                .then(function(uploadResult) {
+                    if (uploadResult.error) {
+                        console.error('[Admin] Upload original error:', uploadResult.error);
+                        doInsert('');
+                        return;
+                    }
+
+                    var publicUrl = supabase.storage.from('paintings')
+                        .getPublicUrl('original/' + fileName);
+                    var finalUrl = publicUrl.data ? publicUrl.data.publicUrl : '';
+                    document.getElementById('original-painting-url').value = finalUrl;
+                    doInsert(finalUrl);
+                });
+        } else {
+            doInsert(originalPaintingUrl);
+        }
+    }
+
+    // ============ 4. 鏁版嵁缁熻 ============
+    function loadStats() {
+        Promise.all([
+            supabase.from('paintings').select('id', { count: 'exact', head: true }),
+            supabase.from('submissions').select('id', { count: 'exact', head: true }),
+            supabase.from('submissions').select('id', { count: 'exact', head: true }).eq('status', 'pending')
+        ]).then(function(results) {
+            document.getElementById('stat-paintings').textContent = (results[0].count !== null) ? results[0].count : '-';
+            document.getElementById('stat-submissions').textContent = (results[1].count !== null) ? results[1].count : '-';
+            document.getElementById('stat-pending').textContent = (results[2].count !== null) ? results[2].count : '0';
+
+            supabase.from('profiles').select('id', { count: 'exact', head: true })
+                .then(function(r) {
+                    document.getElementById('stat-users').textContent = (r.count !== null) ? r.count : '-';
+                })
+                .catch(function() {
+                    document.getElementById('stat-users').textContent = '-';
+                });
+        }).catch(function(err) {
+            console.error('[Admin] Stats error:', err);
+            document.getElementById('stat-paintings').textContent = '!';
+            document.getElementById('stat-submissions').textContent = '!';
+            document.getElementById('stat-pending').textContent = '!';
+            document.getElementById('stat-users').textContent = '!';
+        });
+    }
+
+    // ============ 宸ュ叿鍑芥暟 ============
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // ============ 浼氳瘽鎭㈠ ============
+    function restoreSession() {
+        supabase.auth.getSession().then(function(result) {
+            if (result.data && result.data.session) {
+                var user = result.data.session.user;
+                if (ADMIN_EMAILS.length === 0 || ADMIN_EMAILS.indexOf(user.email) !== -1) {
+                    currentUser = user;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('admin-email-display').textContent = user.email;
+                    initDashboard();
+                }
+            }
+        }).catch(function(err) {
+            console.error('[Admin] Session restore error:', err);
+        });
+    }
+
+    // ============ 鍚姩 ============
+    initSupabase();
+    restoreSession();
+
+})();
+</script>
+
+</body>
+</html>
