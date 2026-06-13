@@ -51,7 +51,7 @@
     font-family: 'Playfair Display', serif;
 }
 
-.option-label-text {
+.option-label {
     font-size: 0.9rem;
     color: var(--cream);
 }
