@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选择挑战模式 - 奶龙美术馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <!-- 模块化 CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/quiz.css">
+</head>
+<body>
+    <div class="museum-bg"></div>
+    
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏模式">⛶</button>
+        <span class="btn-label">全屏</span>
+    </div>
+    
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">🎵</button>
+        <span class="btn-label">音乐</span>
+    </div>
+    
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+    
+    <main class="container">
+        <div class="select-container">
+            <h1 class="select-title">选择挑战模式</h1>
+            <p class="select-desc">请选择本次答题的题目数量</p>
+            
+            <div class="quiz-options">
+                <button class="quiz-option-btn" onclick="startWithCount(5)">
+                    <span class="option-number">5</span>
+                    <span class="option-label">快速体验</span>
+                </button>
+                <button class="quiz-option-btn" onclick="startWithCount(10)">
+                    <span class="option-number">10</span>
+                    <span class="option-label">标准挑战</span>
+                </button>
+                <button class="quiz-option-btn" onclick="startWithCount(23)">
+                    <span class="option-number">23</span>
+                    <span class="option-label">全部题目</span>
+                </button>
+            </div>
+            
+            <button class="back-home-btn" onclick="window.location.href='index.html'">返回首页</button>
+        </div>
+    </main>
+    
+    <script src="js/paintings-data.js"></script>
+    <script>
+        function startWithCount(count) {
+            localStorage.setItem("quizCount", count.toString());
+            localStorage.setItem("currentQuestion", "0");
+            localStorage.setItem("score", "0");
+            localStorage.removeItem("answeredQuestions");
+            window.location.href = "quiz.html";
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(function() {});
+                localStorage.setItem("wasFullscreen", "true");
+            } else {
+                document.exitFullscreen();
+                localStorage.removeItem("wasFullscreen");
+            }
+        }
+        
+        function toggleAudio() {
+            var bgMusic = document.getElementById("bgMusic");
+            var audioControl = document.getElementById("audioControl");
+            if (bgMusic.paused) {
+                bgMusic.play();
+                audioControl.textContent = "🎵";
+                audioControl.classList.remove("muted");
+            } else {
+                bgMusic.pause();
+                audioControl.textContent = "🔇";
+                audioControl.classList.add("muted");
+            }
+        }
+        
+        window.addEventListener("load", function() {
+            var bgMusic = document.getElementById("bgMusic");
+            bgMusic.volume = 0.15;
+            bgMusic.play().catch(function() {});
+        });
+    </script>
+</body>
+</html>

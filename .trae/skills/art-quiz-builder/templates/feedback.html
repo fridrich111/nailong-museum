@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>答题反馈 - 奶龙美术馆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <!-- 模块化 CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages/feedback.css">
+</head>
+<body>
+    <div class="museum-bg"></div>
+    
+    <!-- 全屏按钮 -->
+    <div class="btn-with-label fullscreen-label-wrapper">
+        <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="全屏模式">
+            ⛶
+        </button>
+        <span class="btn-label">全屏</span>
+    </div>
+    
+    <!-- 背景音乐控制 -->
+    <div class="btn-with-label audio-label-wrapper">
+        <button class="audio-control" id="audioControl" onclick="toggleAudio()" title="音乐开关">
+            🎵
+        </button>
+        <span class="btn-label">音乐</span>
+    </div>
+    
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-mountains-rivers-streams-running-water-18178.mp3" type="audio/mpeg">
+    </audio>
+    
+    <main class="container">
+        <div class="feedback-container">
+            <div class="video-container" id="videoContainer">
+                <video id="feedbackVideo" autoplay playsinline>
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+            
+            <div class="explanation-section" id="explanationSection">
+                <img src="assets/images/thinking-nailong.jpg" alt="沉思奶龙" class="thinking-nailong">
+                <div class="speech-bubble">
+                    <h3 class="explanation-title" id="paintingTitle"></h3>
+                    <p class="explanation-text" id="explanationText"></p>
+                </div>
+            </div>
+            
+            
+            <!-- 原画展示区域 -->
+            <div class="original-painting-section" id="originalPaintingSection">
+                <h3 class="original-title">🖼️ 原画欣赏</h3>
+                <div class="painting-comparison">
+                    <div class="painting-item">
+                        <img id="nailongPainting" src="" alt="奶龙改编" class="comparison-img">
+                        <p class="painting-label">奶龙版</p>
+                    </div>
+                    <div class="painting-item">
+                        <img id="originalPainting" src="" alt="原画" class="comparison-img">
+                        <p class="painting-label">原画</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+                下一题
+            </button>
+        </div>
+    </main>
+
+    <script>
+        let isCorrect = false;
+        let painting = null;
+
+        // 音频管理：暂停背景音乐，播放视频音效
+        function manageAudioForVideo() {
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic && !bgMusic.paused) {
+                bgMusic.pause();
+                localStorage.setItem('bgMusicWasPlaying', 'true');
+            }
+        }
+        
+        // 恢复背景音乐
+        function restoreBackgroundMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            const wasPlaying = localStorage.getItem('bgMusicWasPlaying') === 'true';
+            if (bgMusic && wasPlaying) {
+                bgMusic.play().catch(() => {});
+                localStorage.removeItem('bgMusicWasPlaying');
+            }
+        }
+        
+        // 初始化
+        function init() {
+            const correctStr = localStorage.getItem('lastAnswerCorrect');
+            const paintingStr = localStorage.getItem('lastPainting');
+            
+            if (!correctStr || !paintingStr) {
+                window.location.href = 'quiz.html';
+                return;
+            }
+            
+            isCorrect = correctStr === 'true';
+            painting = JSON.parse(paintingStr);
+            
+            // 播放对应视频
+            const video = document.getElementById('feedbackVideo');
+            manageAudioForVideo();
+            video.src = isCorrect ? 'assets/videos/laugh.mp4' : 'assets/videos/sad.mp4';
+            
+            if (isCorrect) {
+                // 答对：视频播放结束后显示"懂你意思"
+                video.onended = function() {
+                    showCorrectMessage();
+                    restoreBackgroundMusic();
+                };
+                video.onerror = function() {
+                    showCorrectMessage();
+                    restoreBackgroundMusic();
+                };
+            } else {
+                // 答错：视频和讲解同时显示
+                video.onloadeddata = function() {
+                    showExplanation();
+                };
+                // 如果视频加载慢，500ms后强制显示讲解
+                setTimeout(showExplanation, 500);
+                setTimeout(function() { restoreBackgroundMusic(); }, 3000);
+            }
+            
+            initAudio();
+            loadOriginalPainting();
+        }
+        
+        // 加载原画
+        function loadOriginalPainting() {
+            document.getElementById('nailongPainting').src = 'assets/images/' + painting.image;
+            // 使用 WikiArt 或其他来源的原画URL
+            var originalUrls = {
+                '《梅杜萨之筏》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg/800px-JEAN_LOUIS_TH%C3%89ODORE_G%C3%89RICAULT_-_La_Balsa_de_la_Medusa_%28Museo_del_Louvre%2C_1818-19%29.jpg',
+                '《夜间的露天咖啡座》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg/800px-Van_Gogh_-_Terrasse_des_Caf%C3%A9s_an_der_Place_du_Forum_in_Arles_am_Abend.jpeg',
+                '《向日葵》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/800px-Vincent_Willem_van_Gogh_127.jpg',
+                '《蒙娜丽莎》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg',
+                '《创造亚当》': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Creaci%C3%B3n_de_Ad%C3%A1m.jpg/800px-Creaci%C3%B3n_de_Ad%C3%A1m.jpg',
+                '《撑阳伞的女人》': 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_National_Gallery_of_Art.jpg'
+            };
+            var url = originalUrls[painting.title];
+            if (url) {
+                document.getElementById('originalPainting').src = url;
+                document.getElementById('originalPaintingSection').style.display = 'block';
+            } else {
+                document.getElementById('originalPaintingSection').style.display = 'none';
+            }
+        }
+        
+        // 初始化音频
+        function initAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            bgMusic.volume = 0.15;
+            // 不自动播放，等视频结束后恢复
+        }
+        
+        // 音乐开关
+        function toggleAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            const audioControl = document.getElementById('audioControl');
+            
+            if (bgMusic.paused) {
+                bgMusic.play();
+                audioControl.textContent = '🎵';
+                audioControl.classList.remove('muted');
+            } else {
+                bgMusic.pause();
+                audioControl.textContent = '🔇';
+                audioControl.classList.add('muted');
+            }
+        }
+        
+        // 全屏切换
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('全屏模式被拒绝:', err);
+                });
+                localStorage.setItem('wasFullscreen', 'true');
+            } else {
+                document.exitFullscreen();
+                localStorage.removeItem('wasFullscreen');
+            }
+        }
+        
+        // 答对后显示"懂你意思"
+        function showCorrectMessage() {
+            document.getElementById('paintingTitle').textContent = painting.title;
+            document.getElementById('explanationText').textContent = '懂你意思';
+            document.getElementById('explanationSection').style.opacity = '1';
+        }
+        
+        // 显示讲解（答错时）
+        function showExplanation() {
+            document.getElementById('paintingTitle').textContent = 
+                `${painting.title} - ${painting.artist} (${painting.year})`;
+            document.getElementById('explanationSection').style.opacity = '1';
+            
+            // 打字机效果
+            typeWriterEffect();
+        }
+        
+        // 打字机效果
+        function typeWriterEffect() {
+            const text = painting.explanation;
+            const element = document.getElementById('explanationText');
+            element.textContent = '';
+            
+            let i = 0;
+            const speed = 50;
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+        
+        // 下一题
+        function nextQuestion() {
+            var currentQuestion = parseInt(localStorage.getItem('currentQuestion') || '0');
+            var quizCount = parseInt(localStorage.getItem('quizCount') || '23');
+            
+            if (currentQuestion >= quizCount) {
+                window.location.href = 'complete.html';
+            } else {
+                window.location.href = 'quiz.html';
+            }
+        }
+        
+        // 页面加载时恢复全屏状态
+        if (localStorage.getItem('wasFullscreen') === 'true') {
+            document.addEventListener('click', function restoreFS() {
+                document.documentElement.requestFullscreen().catch(() => {});
+                localStorage.removeItem('wasFullscreen');
+                document.removeEventListener('click', restoreFS);
+            }, { once: true });
+        }
+
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+</body>
+</html>

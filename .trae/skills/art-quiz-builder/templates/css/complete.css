@@ -1,0 +1,48 @@
+/* ===== 通关页样式 ===== */
+.complete-container {
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+}
+
+.pass-video {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.final-message {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: var(--nailong-yellow);
+    text-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+    margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.final-quote {
+    font-size: 1.2rem;
+    color: var(--antique-gold);
+    margin-bottom: 2rem;
+}
+
+.restart-btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    color: var(--cream);
+    background: transparent;
+    border: 2px solid var(--antique-gold);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.restart-btn:hover {
+    background: var(--antique-gold);
+    color: var(--deep-indigo);
+}
