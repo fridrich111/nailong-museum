@@ -1008,6 +1008,18 @@
 
         document.getElementById('btn-logout').addEventListener('click', handleLogout);
 
+        document.getElementById('review-list').addEventListener('click', function(e) {
+            var btn = e.target.closest('.btn-approve, .btn-reject');
+            if (!btn) return;
+            var id = parseInt(btn.getAttribute('data-id'), 10);
+            if (isNaN(id)) return;
+            if (btn.classList.contains('btn-approve')) {
+                window._adminApprove(id);
+            } else if (btn.classList.contains('btn-reject')) {
+                window._adminReject(id);
+            }
+        });
+
         document.querySelectorAll('#content-review .filter-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('#content-review .filter-btn').forEach(function(b) {
@@ -1138,8 +1150,8 @@
 
             var actionsHtml = '';
             if (sub.status === 'pending') {
-                actionsHtml = '<button class="btn-approve" data-id="' + sub.id + '" onclick="window._adminApprove(' + sub.id + ')">通过</button>' +
-                              '<button class="btn-reject" data-id="' + sub.id + '" onclick="window._adminReject(' + sub.id + ')">拒绝</button>';
+                actionsHtml = '<button class="btn-approve" data-id="' + sub.id + '">通过</button>' +
+                              '<button class="btn-reject" data-id="' + sub.id + '">拒绝</button>';
             }
 
             var createdAt = sub.created_at ? new Date(sub.created_at).toLocaleString('zh-CN') : '未知';
@@ -1163,8 +1175,8 @@
     }
 
     window._adminApprove = function(id) {
-        var sub = allSubmissions.find(function(s) { return s.id === id; });
-        if (!sub) return;
+        var sub = allSubmissions.find(function(s) { return s.id == id; });
+        if (!sub) { console.log('[Admin] Approve: not found id=' + id); return; }
 
         document.getElementById('painting-image').value = sub.image_url || '';
         document.getElementById('painting-title').value = sub.original_title || '';
@@ -1202,7 +1214,7 @@
                         showStatus('操作失败: ' + result.error.message, 'error');
                         return;
                     }
-                    var sub = allSubmissions.find(function(s) { return s.id === id; });
+                    var sub = allSubmissions.find(function(s) { return s.id == id; });
                     if (sub) sub.status = 'rejected';
                     renderReviewList();
                     showStatus('已拒绝该投稿', 'success');
