@@ -993,11 +993,6 @@
         });
 
         document.getElementById('btn-logout').addEventListener('click', handleLogout);
-        document.getElementById('login-submit').addEventListener('click', handleLogin);
-
-        document.getElementById('login-password').addEventListener('keydown', function(e) {
-            if (e.keyCode === 13) handleLogin();
-        });
 
         document.querySelectorAll('#content-review .filter-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -1420,6 +1415,13 @@
             .replace(/'/g, '&#039;');
     }
 
+    function initLogin() {
+        document.getElementById('login-submit').addEventListener('click', handleLogin);
+        document.getElementById('login-password').addEventListener('keydown', function(e) {
+            if (e.keyCode === 13) handleLogin();
+        });
+    }
+
     function restoreSession() {
         supabase.auth.getSession().then(function(result) {
             if (result.data && result.data.session) {
@@ -1438,6 +1440,7 @@
     }
 
     initSupabase();
+    initLogin();
     restoreSession();
 
 })();
